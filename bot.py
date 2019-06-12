@@ -126,7 +126,7 @@ async def on_message(message):
     if message.author == bot.get_user(159985870458322944):
         await message.delete()
     if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
-        return
+        return await bot.process_commands(message)
     if "iriz" in txt:
         iriz = random.choice(["what", "WHAT", "wat", "WAT", "wot", "WOT", "wut", "WUT", "IM HUNGRY"])
         await message.channel.send(iriz)
