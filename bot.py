@@ -24,7 +24,7 @@ for line in qs:
     ls = line.split(" , ")
     quotes[ls[0]] = ls[-1].strip()
 for k, v in quotes.items():
-    if all(a not in k for a in ["ass", "fuck", "sex", "penis", "scrotum","bitch"," tit","dick"]):
+    if all(a not in k.lower() for a in ["ass", "fuck", "sex", "penis", "scrotum", "bitch", " tit", "dick"]):
         censoredquotes[k] = v
 
 
@@ -45,6 +45,7 @@ async def pvpbasics(ctx):
 
 @bot.command()
 async def quote(ctx, name=None, pg=None):
+    qf = {}
     if pg:
         if pg.strip() == "-":
             qf = censoredquotes
