@@ -4,6 +4,23 @@ import random
 
 bot = commands.Bot(command_prefix='%')
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
+with open('data/aliases.txt', 'r') as a:
+    al = a.readlines()
+    a.close()
+with open('data/quotes.txt', 'r') as q:
+    qs = q.readlines()
+    q.close()
+aliases = {}
+quotes = {}
+for line in al:
+    line = line.strip()
+    names = line.split(" ")
+    for n in names:
+        aliases[n] = names[0]
+for line in qs:
+    line = line.replace("\\n", "\n")
+    ls = line.split(" , ")
+    quotes[ls[0]] = ls[-1].strip()
 
 
 @bot.command()
@@ -23,15 +40,8 @@ async def pvpbasics(ctx):
 
 @bot.command()
 async def quote(ctx, name=None):
-    with open('data/quotes.txt', 'r') as q:
-        qs = q.readlines()
-        q.close()
-    quotes = {}
-    for line in qs:
-        line = line.replace("\\n","\n")
-        ls = line.split(" , ")
-        quotes[ls[0]] = ls[-1].strip()
-    print(quotes)
+    if name.lower() in aliases.keys():
+        name = aliases[name]
     if not name:
         final = random.choice(list(quotes.keys()))
         await ctx.send(f"{final} - {quotes[final]}")
