@@ -24,7 +24,7 @@ for line in qs:
     ls = line.split(" , ")
     quotes[ls[0]] = ls[-1].strip()
 for k, v in quotes.items():
-    if all(a not in k for a in ["ass", "fuck", "sex", "penis", "scrotum"]):
+    if all(a not in k for a in ["ass", "fuck", "sex", "penis", "scrotum","bitch"," tit","dick"]):
         censoredquotes[k] = v
 
 
