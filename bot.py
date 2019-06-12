@@ -38,9 +38,9 @@ async def quote(ctx, name=None):
     else:
         try:
             final = random.choice([i for i, j in quotes.items() if j == name])
-            await ctx.send(f"{final} - {quotes[final]}")
+            await ctx.send(f"{final} - {name.title()}")
         except IndexError:
-            await ctx.send(f"I don't have any quotes for {name}!")
+            await ctx.send(f"I don't have any quotes for {name.title()}!")
 
 
 @bot.command()
