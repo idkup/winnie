@@ -13,6 +13,7 @@ with open('data/quotes.txt', 'r') as q:
     q.close()
 aliases = {}
 quotes = {}
+censoredquotes = {}
 for line in al:
     line = line.strip()
     names = line.split(" ")
@@ -22,6 +23,9 @@ for line in qs:
     line = line.replace("\\n", "\n")
     ls = line.split(" , ")
     quotes[ls[0]] = ls[-1].strip()
+for k, v in quotes.items():
+    if all(a not in k for a in ["ass", "fuck", "sex", "penis", "scrotum"]):
+        censoredquotes[k] = v
 
 
 @bot.command()
@@ -40,15 +44,20 @@ async def pvpbasics(ctx):
 
 
 @bot.command()
-async def quote(ctx, name=None):
+async def quote(ctx, name=None, pg=None):
+    if pg:
+        if pg.strip() == "-":
+            qf = censoredquotes
+    else:
+        qf = quotes
     if not name:
-        final = random.choice(list(quotes.keys()))
-        await ctx.send(f"{final} - {quotes[final].title()}")
+        final = random.choice(list(qf.keys()))
+        await ctx.send(f"{final} - {qf[final].title()}")
     else:
         try:
             if name.lower() in aliases.keys():
                 name = aliases[name]
-            final = random.choice([i for i, j in quotes.items() if j == name])
+            final = random.choice([i for i, j in qf.items() if j == name])
             await ctx.send(f"{final} - {name.title()}")
         except IndexError:
             await ctx.send(f"I don't have any quotes for {name.title()}!")
