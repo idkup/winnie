@@ -22,3 +22,5 @@
 "If you liked my input, you'll love my output." , invar
 "I like to think this is true, but mainly because I lack conviction." , invar
 "I once woke up with a roach on the corner of my eye. I believe it was drinking excess eye water. I let the little guy drink up. Because I RESPECT bug types. Would you do the same? I think not. Do you know why? Because you are not a true bug trainer. You do not have the FORTITUDE and STRENGTH to do what it takes to be a master of insects." , invar
+"You ever have those days when you look in the mirror and think 'How did god create something so fucking handsome?'" , invar
+
