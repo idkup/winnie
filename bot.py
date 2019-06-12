@@ -4,6 +4,7 @@ import random
 
 bot = commands.Bot(command_prefix='%')
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
+
 with open('data/aliases.txt', 'r') as a:
     al = a.readlines()
     a.close()
