@@ -46,6 +46,9 @@ async def pvpbasics(ctx):
 @bot.command()
 async def quote(ctx, name=None, pg=None):
     qf = {}
+    if name == "-":
+        name = None
+        pg = "-"
     if pg:
         if pg.strip() == "-":
             qf = censoredquotes
