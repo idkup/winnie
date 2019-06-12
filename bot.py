@@ -43,7 +43,7 @@ async def pvpbasics(ctx):
 async def quote(ctx, name=None):
     if not name:
         final = random.choice(list(quotes.keys()))
-        await ctx.send(f"{final} - {quotes[final]}")
+        await ctx.send(f"{final} - {quotes[final].title()}")
     else:
         try:
             if name.lower() in aliases.keys():
