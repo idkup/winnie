@@ -60,8 +60,8 @@ async def quote(ctx, name=None, pg=None):
     else:
         try:
             if name.lower() in aliases.keys():
-                name = aliases[name]
-            final = random.choice([i for i, j in qf.items() if j == name])
+                ign = aliases[name]
+            final = random.choice([i for i, j in qf.items() if j == ign])
             await ctx.send(f"{final} - {name.title()}")
         except IndexError:
             await ctx.send(f"I don't have any quotes for {name.title()}!")
@@ -154,4 +154,4 @@ async def on_message(message):
         spam_horizon = datetime.datetime.now()
     await bot.process_commands(message)
 
-bot.run('NTg1NjQ4MDI3OTU2NDEyNDQw.XPchQw.NMjHTzNC-pvKL8p80QjgIenKIL0')
+bot.run('NTg1NjQ4MDI3OTU2NDEyNDQw.XQFHpw.uRunypmvUO8PeJcqmzG3n9GizOI')

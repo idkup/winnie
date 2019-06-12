@@ -15,6 +15,7 @@
 "im not a cow" , iriztha
 "You ever look at a raw piece of meat and think 'I wanna eat that.'?" , invar
 "You ever just... wonder what human tastes like?" , invar
+"ecks dee" , fallen
 "I wonder if I could have made him fight another poor player for a little change." , invar
 "I was thinking of doing a system where you would have to buy your way into becoming an officer." , invar
 "I'm sure we could hire one for pretty cheap, I think they prefer to be paid in beads and fur." , invar
