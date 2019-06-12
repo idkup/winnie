@@ -14,3 +14,4 @@
 "IM BORED" , iriztha
 "im not a cow" , iriztha
 "You ever look at a raw piece of meat and think 'I wanna eat that.'?" , invar
+"You ever just... wonder what human tastes like?" , invar
