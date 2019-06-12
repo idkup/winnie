@@ -41,13 +41,13 @@ async def pvpbasics(ctx):
 
 @bot.command()
 async def quote(ctx, name=None):
-    if name.lower() in aliases.keys():
-        name = aliases[name]
     if not name:
         final = random.choice(list(quotes.keys()))
         await ctx.send(f"{final} - {quotes[final]}")
     else:
         try:
+            if name.lower() in aliases.keys():
+                name = aliases[name]
             final = random.choice([i for i, j in quotes.items() if j == name])
             await ctx.send(f"{final} - {name.title()}")
         except IndexError:
