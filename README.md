@@ -9,4 +9,4 @@ Team Magma's Discord Bot.
 ```
 pip3 install -r required_modules.txt
 ```
-then run bot.py
+This should install the module discord.py. Then, simply run bot.py.
