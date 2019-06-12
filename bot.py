@@ -115,15 +115,16 @@ async def on_member_remove(member):
 
 @bot.event
 async def on_message_edit(before, after):
-    try:
-        await bot.get_channel(428701985701756930).send(
-            f"Message in #{before.channel}, sent by {before.author}, edited from ```{before.content}``` to\
-         ```{after.content}```")
-    except discord.errors.HTTPException:
-        await bot.get_channel(428701985701756930).send(
-            f"Message in #{before.channel}, sent by {before.author}, edited from ```{before.content}```")
-        await bot.get_channel(428701985701756930).send(" to\
-         ```{after.content}```")
+    if before.content != after.content:
+        try:
+            await bot.get_channel(428701985701756930).send(
+                f"Message in #{before.channel}, sent by {before.author}, edited from ```{before.content}``` to\
+             ```{after.content}```")
+        except discord.errors.HTTPException:
+            await bot.get_channel(428701985701756930).send(
+                f"Message in #{before.channel}, sent by {before.author}, edited from ```{before.content}```")
+            await bot.get_channel(428701985701756930).send(" to\
+             ```{after.content}```")
 
 
 @bot.event
