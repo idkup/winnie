@@ -59,6 +59,7 @@ async def quote(ctx, name=None, pg=None):
         await ctx.send(f"{final} - {qf[final].title()}")
     else:
         try:
+            ign = ""
             if name.lower() in aliases.keys():
                 ign = aliases[name]
             final = random.choice([i for i, j in qf.items() if j == ign])
