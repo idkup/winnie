@@ -22,6 +22,28 @@ async def pvpbasics(ctx):
 
 
 @bot.command()
+async def quote(ctx, name=None):
+    with open('data/quotes.txt', 'r') as q:
+        qs = q.readlines()
+        q.close()
+    quotes = {}
+    for line in qs:
+        line = line.replace("\\n","\n")
+        ls = line.split(" , ")
+        quotes[ls[0]] = ls[-1].strip()
+    print(quotes)
+    if not name:
+        final = random.choice(list(quotes.keys()))
+        await ctx.send(f"{final} - {quotes[final]}")
+    else:
+        try:
+            final = random.choice([i for i, j in quotes.items() if j == name])
+            await ctx.send(f"{final} - {quotes[final]}")
+        except IndexError:
+            await ctx.send(f"I don't have any quotes for {name}!")
+
+
+@bot.command()
 async def rules(ctx):
     await ctx.send("""Team Magma Rules:
 1. Keep Chat pg 13 overall.\
