@@ -61,7 +61,7 @@ async def quote(ctx, name=None, pg=None):
         try:
             ign = ""
             if name.lower() in aliases.keys():
-                ign = aliases[name]
+                ign = aliases[name.lower()]
             final = random.choice([i for i, j in qf.items() if j == ign])
             await ctx.send(f"{final} - {name.title()}")
         except IndexError:
@@ -155,4 +155,4 @@ async def on_message(message):
         spam_horizon = datetime.datetime.now()
     await bot.process_commands(message)
 
-bot.run('NTg1NjQ4MDI3OTU2NDEyNDQw.XQFHpw.uRunypmvUO8PeJcqmzG3n9GizOI')
+bot.run('NTg1NjQ4MDI3OTU2NDEyNDQw.XQFwng.18g3exdY3RwMKM2Tz5cdO5aylK0')
