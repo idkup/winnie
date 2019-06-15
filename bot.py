@@ -11,6 +11,8 @@ with open('data/aliases.txt', 'r') as a:
 with open('data/quotes.txt', 'r') as q:
     qs = q.readlines()
     q.close()
+with open('key.txt', 'r') as k:
+    key = k.readline()
 aliases = {}
 quotes = {}
 censoredquotes = {}
@@ -162,4 +164,4 @@ async def on_message(message):
         spam_horizon = datetime.datetime.now()
     await bot.process_commands(message)
 
-bot.run('nothing')
+bot.run(key)
