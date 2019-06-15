@@ -87,6 +87,13 @@ Reminder:
 -Please read over the pins or descriptions of each channel to learn what they are for.""")
 
 
+@bot.command()
+async def servers(ctx):
+    servers = list(bot.guilds)
+    await ctx.send(f"Connected on {len(servers)} servers:")
+    await ctx.send('\n'.join(server.name for server in servers))
+
+
 @bot.event
 async def on_member_join(member):
     await bot.get_channel(234822474611687424).send(f"""Welcome to Team Magma HQ {member.mention}!\
@@ -155,4 +162,4 @@ async def on_message(message):
         spam_horizon = datetime.datetime.now()
     await bot.process_commands(message)
 
-bot.run('NTg1NjQ4MDI3OTU2NDEyNDQw.XQFwng.18g3exdY3RwMKM2Tz5cdO5aylK0')
+bot.run('nothing')
