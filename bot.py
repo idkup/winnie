@@ -21,12 +21,25 @@ with open('data/learnsets.json', 'r') as learn:
 with open('data/pokedex.json', 'r') as dex:
     pokedex = json.load(dex)
     dex.close()
+with open('data/typecolors.json', 'r') as tc:
+    typecolors = json.load(tc)
+    tc.close()
 
 censoredquotes = {}
 for k, v in quotes.items():
     if all(a not in k.lower() for a in ["ass", "fuck", "sex", "penis", "scrotum", "bitch", " tit", "dick"]):
         censoredquotes[k] = v
 
+
+@bot.command()
+async def add_quote(ctx, newquote, author):
+    if ctx.message.author.guild_permissions.manage_messages:
+        quotes[f'"{newquote}"'] = author.lower()
+        with open('data/quotes.json', 'w') as qfile:
+            json.dump(quotes, qfile)
+            qfile.close()
+            print('done')
+        await ctx.send(f'New quote added. "{newquote}" - {author.title()}')
 
 @bot.command()
 async def ass(ctx):
@@ -39,18 +52,63 @@ async def calc(ctx):
     await ctx.send("Pokemon Damage Calculator: https://pokemonshowdown.com/damagecalc/")
 
 
-@bot.command()
+@bot.command(aliases=['dt', 'poke', 'pokemon'])
 async def data(ctx, args):
     poke = "".join(args)
     poke = poke.replace(" ", "")
-    poke = poke.replace("-", "")
     poke = poke.replace("'", "")
-    entry = pokedex[poke.lower()]
-    e = discord.Embed(title=entry["species"])
-    e.add_field(name="Type:", value=", ".join(entry["types"]))
+    poke = poke.replace("-", "")
+    try:
+        entry = pokedex[poke.lower()]
+    except KeyError:
+        return await ctx.send(f"{poke} is not recognized!")
+    imgn = format(entry['num'], '03d')
+    e = discord.Embed(title=f"{imgn}. {entry['species']}")
+    if 'alola' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-a.png"
+    elif poke == 'giratinaorigin':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-o.png"
+    elif poke == 'kyuremblack':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-b.png"
+    elif poke == 'kyuremwhite':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-w.png"
+    elif poke == 'keldeoresolute':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-r.png"
+    elif poke == 'darmanitanzen':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}d.png"
+    elif poke == 'rotomwash':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}w.png"
+    elif poke == 'rotomheat':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}h.png"
+    elif poke == 'rotommow':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}m.png"
+    elif poke == 'rotomfrost':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}f.png"
+    elif poke == 'rotomfan':
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}s.png"
+    elif poke == 'shayminsky' or 'therian' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-s.png"
+    elif 'primal' in poke or 'pirouette' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-p.png"
+    elif 'megax' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-mx.png"
+    elif 'megay' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-my.png"
+    elif 'mega' in poke:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}-m.png"
+    else:
+        url = f"https://www.serebii.net/pokedex-sm/icon/{imgn}.png"
+    e.set_thumbnail(url=url)
+    e.add_field(name='Type:', value=', '.join(entry['types']))
+    e.colour = typecolors[entry['types'][0]]
     e.add_field(name="Base Stats:", value=f"{entry['baseStats']['hp']}/{entry['baseStats']['atk']}/{entry['baseStats']['def']}/{entry['baseStats']['spa']}/{entry['baseStats']['spd']}/{entry['baseStats']['spe']}")
-    e.add_field(name="Abilities:", value=", ".join(entry["abilities"].values()))
+    try:
+        ha = entry["abilities"]["H"]
+        e.add_field(name="Abilities:", value=", ".join(entry["abilities"].values())+" (H)")
+    except KeyError:
+        e.add_field(name="Abilities:", value=", ".join(entry["abilities"].values()))
     await ctx.send(embed=e)
+
 
 @bot.command()
 async def evspots(ctx):
@@ -95,6 +153,18 @@ async def learn(ctx, pokemon, *args):
 @bot.command()
 async def pick(ctx, *args):
     await ctx.send(random.choice([*args]))
+
+
+@bot.command()
+async def purge(ctx, ct=10):
+    if ctx.author.guild_permissions.manage_messages:
+        try:
+            count = int(ct)
+        except ValueError:
+            return
+        async for msg in ctx.channel.history(limit=count):
+            if not msg.pinned:
+                await msg.delete()
 
 
 @bot.command()
@@ -213,22 +283,52 @@ async def on_message_delete(message):
 async def on_message(message):
     global spam_horizon
     txt = message.content.lower()
-    if message.author == bot.get_user(159985870458322944):
-        await message.delete()
-    if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
-        return await bot.process_commands(message)
-    if "iriz" in txt:
-        iriz = random.choice(["what", "WHAT", "wat", "WAT", "wot", "WOT", "wut", "WUT", "IM HUNGRY"])
-        await message.channel.send(iriz)
-        spam_horizon = datetime.datetime.now()
-    elif "no u" in txt:
-        await message.channel.send(message.content)
-        spam_horizon = datetime.datetime.now()
-    elif "iron" in txt:
-        iron = random.choice([":frog:", bot.get_emoji(314143184840294400), bot.get_emoji(549410120480587776)])
-        await message.channel.send(iron)
-        spam_horizon = datetime.datetime.now()
+    if message.channel.id == 608098962305581070 and "!g" in txt:
+        await message.add_reaction(bot.get_emoji(314146023243251712))
+        await message.add_reaction("❌")
+    else:
+        if message.author == bot.get_user(159985870458322944):
+            await message.delete()
+        if "nigger" in txt:
+            await message.delete()
+        if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
+            return await bot.process_commands(message)
+        if "iriz" in txt:
+            iriz = random.choice(["what", "WHAT", "wat", "WAT", "wot", "WOT", "wut", "WUT", "IM HUNGRY"])
+            await message.channel.send(iriz)
+            spam_horizon = datetime.datetime.now()
+        elif "no u" in txt:
+            await message.channel.send(message.content)
+            spam_horizon = datetime.datetime.now()
+        elif "iron" in txt:
+            iron = random.choice([":frog:", bot.get_emoji(314143184840294400), bot.get_emoji(549410120480587776)])
+            await message.channel.send(iron)
+            spam_horizon = datetime.datetime.now()
     await bot.process_commands(message)
+
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.channel_id != 608098962305581070:
+        return
+    if str(payload.emoji) != "❌":
+        return
+    channel = bot.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    if payload.user_id != message.author.id:
+        return
+    if "!g" not in message.content:
+        return
+    for react in message.reactions:
+        if react.custom_emoji:
+            if react.emoji.id == 314146023243251712:
+                users = await react.users().flatten()
+                try:
+                    users.remove(bot.user)
+                except ValueError:
+                    pass
+                winner = random.choice(users)
+                await channel.send(f"{winner.mention} has won {message.content.replace('!g', '').strip()} from {message.author.mention}!")
 
 
 bot.run(key)
