@@ -3,16 +3,14 @@ from discord.ext import commands
 import datetime
 import random
 import json
+from quote_db import QuoteDB
+from quoted import Quoted
 
-bot = commands.Bot(command_prefix='%')
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix='%', intents=intents)
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
 
-with open('data/aliases.json', 'r') as a:
-    aliases = json.load(a)
-    a.close()
-with open('data/quotes.json', 'r') as q:
-    quotes = json.load(q)
-    q.close()
 with open('key.txt', 'r') as k:
     key = k.readline()
 with open('data/learnsets.json', 'r') as learn:
@@ -25,26 +23,15 @@ with open('data/typecolors.json', 'r') as tc:
     typecolors = json.load(tc)
     tc.close()
 
-censoredquotes = {}
-for k, v in quotes.items():
-    if all(a not in k.lower() for a in ["ass", "fuck", "sex", "penis", "scrotum", "bitch", " tit", "dick"]):
-        censoredquotes[k] = v
+quote_db = QuoteDB()
 
 
 @bot.command()
-async def add_quote(ctx, newquote, author):
+async def add_user(ctx):
     if ctx.message.author.guild_permissions.manage_messages:
-        quotes[f'"{newquote}"'] = author.lower()
-        with open('data/quotes.json', 'w') as qfile:
-            json.dump(quotes, qfile)
-            qfile.close()
-            print('done')
-        await ctx.send(f'New quote added. "{newquote}" - {author.title()}')
-
-@bot.command()
-async def ass(ctx):
-    await ctx.author.send("leave me alone you pervert")
-    await ctx.message.delete()
+        if ctx.message.mentions:
+            uid = ctx.message.mentions[0].id
+            quote_db.add_user(Quoted(uid))
 
 
 @bot.command()
@@ -159,7 +146,7 @@ async def pick(ctx, *args):
 async def purge(ctx, ct=10):
     if ctx.author.guild_permissions.manage_messages:
         try:
-            count = int(ct)
+            count = int(ct) + 1
         except ValueError:
             return
         async for msg in ctx.channel.history(limit=count):
@@ -179,27 +166,7 @@ async def pvpbasics(ctx):
 
 @bot.command()
 async def quote(ctx, name=None, pg=None):
-    qf = {}
-    if name == "-":
-        name = None
-        pg = "-"
-    if pg:
-        if pg.strip() == "-":
-            qf = censoredquotes
-    else:
-        qf = quotes
-    if not name:
-        final = random.choice(list(qf.keys()))
-        await ctx.send(f"{final} - {qf[final].title()}")
-    else:
-        try:
-            ign = ""
-            if name.lower() in aliases.keys():
-                ign = aliases[name.lower()]
-            final = random.choice([i for i, j in qf.items() if j == ign])
-            await ctx.send(f"{final} - {name.title()}")
-        except IndexError:
-            await ctx.send(f"I don't have any quotes for {name.title()}!")
+    pass
 
 
 @bot.command()
@@ -234,25 +201,38 @@ async def smogdex(ctx, pokemon):
 
 
 @bot.event
+async def on_ready():
+    role_msg = await bot.get_channel(863188820325695508).fetch_message(864985245178527765)
+    await role_msg.edit(
+        content="""React with the following to get roles: 
+:one: : Summoner's Rift
+:two: : Howling Abyss
+:three: : Teamfight Tactics
+:four: : Party Games
+:five: : Movies""")
+    await role_msg.add_reaction("4️⃣")
+    await role_msg.add_reaction("5️⃣")
+
+
+@bot.event
 async def on_member_join(member):
     await bot.get_channel(234822474611687424).send(f"""Welcome to Team Magma HQ {member.mention}! \
 Please read over the rules.
 
 Team Magma Rules:
-1. Keep Chat pg 13 overall.\
+1. Keep Chat PG-13 overall.\
  This rule may be loosely enforced at times, but tone it down when an officer/leader asks you to.
 2. Only use tags when necessary.
 3. Do not spam images/videos/gifs. \
 Try to keep them relevant to the discussion at hand.
 4. Do not post links to other discords without permission from an officer/leader. \
-The Official Pro Discord is an exception to this rule.
-5. Be respectful, and if an officer/leader ask you to stop something, drop it or take it to PMs.
+5. Be respectful, and if an officer/leader asks you to stop something, drop it or take it to PMs.
 
 Reminder: 
 -If you have any problems (officers included) please bring them up to an officer or leader.
 -If you break a rule you will be warned.\
  If you break rules repeatedly you will be put into Time Out and further action may be taken.
--Please read over the pins or descriptions of each channel to learn what they are for.""")
+-Please read over the pins or descriptions of each channel before messaging.""")
 
 
 @bot.event
@@ -309,12 +289,25 @@ async def on_message(message):
 
 @bot.event
 async def on_raw_reaction_add(payload):
+    guild = bot.get_guild(payload.guild_id)
+    channel = bot.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    if message.id == 864985245178527765:
+        if str(payload.emoji) == "1️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192043860787200))
+        elif str(payload.emoji) == "2️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(865006742411804673))
+        elif str(payload.emoji) == "3️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(865006785835302913))
+        elif str(payload.emoji) == "4️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192453351079986))
+        elif str(payload.emoji) == "5️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192504332845117))
+
     if payload.channel_id != 608098962305581070:
         return
     if str(payload.emoji) != "❌":
         return
-    channel = bot.get_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
     if payload.user_id != message.author.id:
         return
     if "!g" not in message.content:
@@ -330,5 +323,22 @@ async def on_raw_reaction_add(payload):
                 winner = random.choice(users)
                 await channel.send(f"{winner.mention} has won {message.content.replace('!g', '').strip()} from {message.author.mention}!")
 
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    guild = bot.get_guild(payload.guild_id)
+    channel = bot.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    if message.id == 864985245178527765:
+        if str(payload.emoji) == "1️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192043860787200))
+        elif str(payload.emoji) == "2️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(865006742411804673))
+        elif str(payload.emoji) == "3️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(865006785835302913))
+        elif str(payload.emoji) == "4️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192453351079986))
+        elif str(payload.emoji) == "5️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192504332845117))
 
 bot.run(key)
