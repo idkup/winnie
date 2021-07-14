@@ -202,17 +202,7 @@ async def smogdex(ctx, pokemon):
 
 @bot.event
 async def on_ready():
-    role_msg = await bot.get_channel(863188820325695508).fetch_message(864985245178527765)
-    await role_msg.edit(
-        content="""React with the following to get roles: 
-:one: : Summoner's Rift
-:two: : Howling Abyss
-:three: : Teamfight Tactics
-:four: : Party Games
-:five: : Movies""")
-    await role_msg.add_reaction("4️⃣")
-    await role_msg.add_reaction("5️⃣")
-
+   pass
 
 @bot.event
 async def on_member_join(member):
