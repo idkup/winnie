@@ -7,4 +7,7 @@ class QuoteDB:
         self.taken_aliases = []
 
     def add_user(self, user):
-        self.quoted += Quoted(user)
+        self.quoted.append(user)
+
+    def add_taken_alias(self, alias):
+        self.taken_aliases.append(alias)

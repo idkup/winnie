@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import datetime
 import random
+import pickle
 import json
 from quote_db import QuoteDB
 from quoted import Quoted
@@ -23,7 +24,50 @@ with open('data/typecolors.json', 'r') as tc:
     typecolors = json.load(tc)
     tc.close()
 
-quote_db = QuoteDB()
+try:
+    with open('quotes.txt', 'rb') as q:
+        quote_db = pickle.load(q)
+        q.close()
+except FileNotFoundError:
+    quote_db = QuoteDB()
+
+
+@bot.command()
+async def add_alias(ctx, alias):
+    if ctx.message.author.guild_permissions.manage_messages:
+        if not ctx.message.mentions:
+            return await ctx.send("Please mention the user you are trying to add an alias for.")
+        if alias.lower() in quote_db.taken_aliases:
+            return await ctx.send("This alias has already been taken by another user.")
+        uid = ctx.message.mentions[0].id
+        for u in quote_db.quoted:
+            if u.uid == uid:
+                user = u
+                break
+        else:
+            return await ctx.send("The user you mentioned is not in the quote database.")
+        user.add_alias(alias.lower())
+        quote_db.add_taken_alias(alias.lower())
+        print(user.aliases)
+        return await ctx.send(f"<@{uid}> has received the alias {alias}!")
+    return await ctx.send("This is an officer-only command.")
+
+
+@bot.command()
+async def add_quote(ctx, alias, quote_text):
+    if ctx.message.author.guild_permissions.manage_messages:
+        for u in quote_db.quoted:
+            if alias.lower() in u.aliases:
+                user = u
+                break
+        else:
+            return await ctx.send("This alias is not in the database!")
+        user.add_quote(quote_text)
+        with open("quotes.txt", "wb+") as qf:
+            pickle.dump(quote_db, qf)
+            qf.close()
+        return await ctx.send("Quote added.")
+    return await ctx.send("This is an officer-only command.")
 
 
 @bot.command()
@@ -31,7 +75,22 @@ async def add_user(ctx):
     if ctx.message.author.guild_permissions.manage_messages:
         if ctx.message.mentions:
             uid = ctx.message.mentions[0].id
-            quote_db.add_user(Quoted(uid))
+            for u in quote_db.quoted:
+                if u.uid == uid:
+                    return await ctx.send("This user is already in the database!")
+            new_user = Quoted(uid)
+            alias = ctx.message.mentions[0].name
+            if alias.lower() not in quote_db.taken_aliases:
+                new_user.add_alias(alias.lower())
+                quote_db.add_taken_alias(alias.lower())
+            else:
+                await ctx.send(f"{alias} has been taken by another user. A new alias must be manually assigned.")
+            quote_db.add_user(new_user)
+            with open("quotes.txt", "wb+") as qf:
+                pickle.dump(quote_db, qf)
+                qf.close()
+            return await ctx.send(f"<@{uid}> has been added to the quote database.")
+    return await ctx.send("This is an officer-only command.")
 
 
 @bot.command()
@@ -165,8 +224,20 @@ async def pvpbasics(ctx):
 
 
 @bot.command()
-async def quote(ctx, name=None, pg=None):
-    pass
+async def quote(ctx, name=None):
+    if not name:
+        user = random.choice(quote_db.quoted)
+        name = user.aliases[0]
+    else:
+        for u in quote_db.quoted:
+            if name.lower() in u.aliases:
+                user = u
+                break
+        else:
+            return await ctx.send("This alias is not in the database!")
+    q = user.get_random_quote()
+    return await ctx.send(f"\"{q}\" - {name}")
+
 
 
 @bot.command()
@@ -202,7 +273,8 @@ async def smogdex(ctx, pokemon):
 
 @bot.event
 async def on_ready():
-   pass
+    pass
+
 
 @bot.event
 async def on_member_join(member):
