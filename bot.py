@@ -244,6 +244,15 @@ async def quote(ctx, name=None):
 
 
 @bot.command()
+async def remove_quote(ctx, quote_text):
+    for u in quote_db.quoted:
+        if quote_text in u.quotes:
+            u.quotes.remove(quote_text)
+            return await ctx.send("Quote removed from database.")
+    return await ctx.send("Quote not found in database.")
+
+
+@bot.command()
 async def rules(ctx):
     await ctx.send("""Team Magma Rules:
 1. Keep Chat pg 13 overall.\
