@@ -230,7 +230,7 @@ async def quote(ctx, name=None):
         if len(u.quotes) > 0:
             has_quotes.append(u)
     if not name:
-        user = random.choice(quote_db.quoted)
+        user = random.choice(has_quotes)
         name = user.aliases[0]
     else:
         for u in has_quotes:
