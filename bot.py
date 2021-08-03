@@ -225,19 +225,22 @@ async def pvpbasics(ctx):
 
 @bot.command()
 async def quote(ctx, name=None):
+    has_quotes = []
+    for u in quote_db.quoted:
+        if len(u.quotes) > 0:
+            has_quotes.append(u)
     if not name:
         user = random.choice(quote_db.quoted)
         name = user.aliases[0]
     else:
-        for u in quote_db.quoted:
+        for u in has_quotes:
             if name.lower() in u.aliases:
                 user = u
                 break
         else:
-            return await ctx.send("This alias is not in the database!")
+            return await ctx.send("This alias is not in the database or has no quotes!")
     q = user.get_random_quote()
     return await ctx.send(f"\"{q}\" - {name}")
-
 
 
 @bot.command()
