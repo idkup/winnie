@@ -240,7 +240,7 @@ async def quote(ctx, name=None):
         else:
             return await ctx.send("This alias is not in the database or has no quotes!")
     q = user.get_random_quote()
-    return await ctx.send(f"\"{q}\" - {name}")
+    return await ctx.send(f"\"{q}\" - {name.title()}")
 
 
 @bot.command()
