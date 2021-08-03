@@ -25,7 +25,7 @@ with open('data/typecolors.json', 'r') as tc:
     tc.close()
 
 try:
-    with open('quotes.txt', 'rb') as q:
+    with open('data/quotes.txt', 'rb') as q:
         quote_db = pickle.load(q)
         q.close()
 except FileNotFoundError:
@@ -63,7 +63,7 @@ async def add_quote(ctx, alias, quote_text):
         else:
             return await ctx.send("This alias is not in the database!")
         user.add_quote(quote_text)
-        with open("quotes.txt", "wb+") as qf:
+        with open("data/quotes.txt", "wb+") as qf:
             pickle.dump(quote_db, qf)
             qf.close()
         return await ctx.send("Quote added.")
@@ -86,7 +86,7 @@ async def add_user(ctx):
             else:
                 await ctx.send(f"{alias} has been taken by another user. A new alias must be manually assigned.")
             quote_db.add_user(new_user)
-            with open("quotes.txt", "wb+") as qf:
+            with open("data/quotes.txt", "wb+") as qf:
                 pickle.dump(quote_db, qf)
                 qf.close()
             return await ctx.send(f"<@{uid}> has been added to the quote database.")
