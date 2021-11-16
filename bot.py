@@ -377,6 +377,8 @@ async def on_raw_reaction_add(payload):
             await guild.get_member(payload.user_id).add_roles(guild.get_role(863192453351079986))
         elif str(payload.emoji) == "5️⃣":
             await guild.get_member(payload.user_id).add_roles(guild.get_role(863192504332845117))
+        elif str(payload.emoji) == "6️⃣":
+            await guild.get_member(payload.user_id).add_roles(guild.get_role(910277794074886145))
 
     if payload.channel_id != 608098962305581070:
         return
@@ -414,5 +416,22 @@ async def on_raw_reaction_remove(payload):
             await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192453351079986))
         elif str(payload.emoji) == "5️⃣":
             await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192504332845117))
+        elif str(payload.emoji) == "6️⃣":
+            await guild.get_member(payload.user_id).remove_roles(guild.get_role(910277794074886145))
+
+
+# @bot.event
+# async def on_ready():
+#     channel = bot.get_channel(863188820325695508)
+#     message = await channel.fetch_message(864985245178527765)
+#     await message.edit(content="""React with the following to get roles:
+# :one: : Summoner's Rift
+# :two: : Howling Abyss
+# :three: : Teamfight Tactics
+# :four: : Party Games
+# :five: : Movies
+# :six: : Valorant""")
+#     await message.add_reaction("6️⃣")
+
 
 bot.run(key)
