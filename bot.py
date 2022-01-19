@@ -167,7 +167,6 @@ async def headcount(ctx, dungeon):
         e = discord.Embed(title=f"Headcount for {dungeon}",
                           description=f"React with {bot.get_emoji(314146023243251712)} to participate!")
         message = await ctx.channel.send(f"Headcount started by {ctx.author.mention}.", embed=e)
-        await ctx.send(message)
         await message.add_reaction(bot.get_emoji(314146023243251712))
 
 
