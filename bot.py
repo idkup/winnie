@@ -165,10 +165,10 @@ async def evspots(ctx):
 async def headcount(ctx, dungeon):
     if ctx.author.guild_permissions.manage_messages:
         e = discord.Embed(title=f"Headcount for {dungeon}",
-                          description=f"React with {bot.get_emoji(925313325221437441)} to participate!")
+                          description=f"React with {bot.get_emoji(314146023243251712)} to participate!")
         message = await ctx.channel.send(f"Headcount started by {ctx.author.mention}.", embed=e)
         await ctx.send(message)
-        await message.add_reaction(bot.get_emoji(925313325221437441))
+        await message.add_reaction(bot.get_emoji(314146023243251712))
 
 
 @bot.command()
