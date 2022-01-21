@@ -251,7 +251,6 @@ async def rules(ctx):
 3. Do not spam images/videos/gifs. \
 Try to keep them relevant to the discussion at hand.
 4. Do not post links to other discords without permission from an officer/leader. \
-The Official Pro Discord is an exception to this rule.
 5. Be respectful, and if an officer/leader ask you to stop something, drop it or take it to PMs.
 
 Reminder: 
