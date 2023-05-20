@@ -7,7 +7,7 @@ import pickle
 import json
 from quote_db import QuoteDB
 from quoted import Quoted
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 # REACTION ROLES
@@ -23,7 +23,7 @@ REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907]
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix='|', intents=intents)
+bot = commands.Bot(command_prefix='%', intents=intents)
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
 
 with open('key.txt', 'r') as k:

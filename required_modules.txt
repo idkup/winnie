@@ -1,1 +1,1 @@
-discord >= 1.0
+discord >= 2.2.3
