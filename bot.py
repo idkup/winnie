@@ -2,14 +2,28 @@ import discord
 from discord.ext import commands
 import datetime
 import random
+import re
 import pickle
 import json
 from quote_db import QuoteDB
 from quoted import Quoted
+from typing import Optional, Tuple
+
+
+# REACTION ROLES
+class ReactionRoleFlags(commands.FlagConverter):
+    Title: str
+    Emojis: Tuple[int, ...]
+    Roles: Tuple[int, ...]
+    Unique: bool = False
+
+
+MAGMA_GUILD = 234822474611687424
+REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907]
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix='%', intents=intents)
+bot = commands.Bot(command_prefix='|', intents=intents)
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
 
 with open('key.txt', 'r') as k:
@@ -157,8 +171,19 @@ async def data(ctx, args):
 
 
 @bot.command()
-async def evspots(ctx):
-    await ctx.send("https://cdn.discordapp.com/attachments/404811373546176514/549088567603888128/image0.jpg")
+async def generate_reaction_roles(ctx, *, flags: ReactionRoleFlags):
+    embed = discord.Embed(title=flags.Title)
+    desc = ""
+    if flags.Unique:
+        desc += "*You may only select one of the following roles.*\n"
+    else:
+        desc += "*You may select as many of the following roles as you please.*\n"
+    for e, r in zip(flags.Emojis, flags.Roles):
+        desc += f"{bot.get_emoji(e)} <@&{r}>\n"
+    embed.description = desc
+    message = await bot.get_channel(REACTION_ROLES_CHANNEL).send(embed=embed)
+    for e in flags.Emojis:
+        await message.add_reaction(bot.get_emoji(e))
 
 
 @bot.command(aliases=["hc"])
@@ -204,16 +229,6 @@ async def purge(ctx, ct=10):
 
 
 @bot.command()
-async def pvpbasics(ctx):
-    await ctx.send("""Here are some resources for beginning PvP:
-    Battling: <https://docs.google.com/document/d/1fcnYDUwigMt4ykwCtO0d0cJXAEA5oKupB4MO-ZGN6xQ/edit?usp=sharing>
-    General Teambuilding: \
-<https://docs.google.com/document/d/1cx_A6fsuUC6BPBP5CPT7ibpNSab-Z9HlZskD1q5MQ8w/edit?usp=sharing>
-    Teambuilding Checklist: \
-<https://docs.google.com/document/d/1y1qZ3-Llrxifm2uS5iNb-5anhfMmN-xybyTMfS-CpH4/edit?usp=sharing>""")
-
-
-@bot.command()
 async def quote(ctx, name=None):
     has_quotes = []
     for u in quote_db.quoted:
@@ -244,7 +259,8 @@ async def remove_quote(ctx, quote_text):
 
 @bot.command()
 async def rules(ctx):
-    await ctx.send("""Team Magma Rules:
+    if ctx.guild.id == MAGMA_GUILD:
+        await ctx.send("""Team Magma Rules:
 1. Keep Chat pg 13 overall.\
  This rule may be loosely enforced at times, but tone it down when an officer/leader asks you to.
 2. Only use tags when necessary.
@@ -355,19 +371,19 @@ async def on_raw_reaction_add(payload):
     guild = bot.get_guild(payload.guild_id)
     channel = bot.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
-    if message.id == 864985245178527765:
-        if str(payload.emoji) == "1️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192043860787200))
-        elif str(payload.emoji) == "2️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(865006742411804673))
-        elif str(payload.emoji) == "3️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(865006785835302913))
-        elif str(payload.emoji) == "4️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192453351079986))
-        elif str(payload.emoji) == "5️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(863192504332845117))
-        elif str(payload.emoji) == "6️⃣":
-            await guild.get_member(payload.user_id).add_roles(guild.get_role(910277794074886145))
+    embeds = message.embeds
+    # REACTION ROLES
+    if payload.channel_id in REACTION_ROLES_CHANNELS and message.author == bot.user:
+        parse = embeds[0].description
+        unique = "*You may only select one of the following roles.*" in parse
+        parsed_lines = parse.splitlines()[1:]
+        for line in parsed_lines:
+            role_id = int(re.search(r'(?<=\<@&)(.*?)(?=>)', line)[1])
+            if str(payload.emoji) in line:
+                await guild.get_member(payload.user_id).add_roles(guild.get_role(role_id))
+                continue
+            elif unique:
+                await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
 
     if payload.channel_id != 608098962305581070:
         return
@@ -394,19 +410,15 @@ async def on_raw_reaction_remove(payload):
     guild = bot.get_guild(payload.guild_id)
     channel = bot.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
-    if message.id == 864985245178527765:
-        if str(payload.emoji) == "1️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192043860787200))
-        elif str(payload.emoji) == "2️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(865006742411804673))
-        elif str(payload.emoji) == "3️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(865006785835302913))
-        elif str(payload.emoji) == "4️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192453351079986))
-        elif str(payload.emoji) == "5️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(863192504332845117))
-        elif str(payload.emoji) == "6️⃣":
-            await guild.get_member(payload.user_id).remove_roles(guild.get_role(910277794074886145))
+    embeds = message.embeds
+    # REACTION ROLES
+    if payload.channel_id in REACTION_ROLES_CHANNELS and message.author == bot.user:
+        parse = embeds[0].description
+        parsed_lines = parse.splitlines()[1:]
+        for line in parsed_lines:
+            role_id = int(re.search(r'(?<=\<@&)(.*?)(?=>)', line)[1])
+            if str(payload.emoji)[1:-1] in line:
+                await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
 
 
 # @bot.event
