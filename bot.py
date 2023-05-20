@@ -295,7 +295,8 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    await bot.get_channel(234822474611687424).send(f"""Welcome to Team Magma HQ {member.mention}! \
+    if member.guild.id == MAGMA_GUILD:
+        await bot.get_channel(234822474611687424).send(f"""Welcome to Team Magma HQ {member.mention}! \
 Please read over the rules.
 
 Team Magma Rules:
