@@ -183,7 +183,7 @@ async def generate_reaction_roles(ctx, *, flags: ReactionRoleFlags):
     for e, r in zip(flags.Emojis, flags.Roles):
         desc += f"{bot.get_emoji(e)} <@&{r}>\n"
     embed.description = desc
-    message = await bot.get_channel(REACTION_ROLES_CHANNEL).send(embed=embed)
+    message = await ctx.channel.send(embed=embed)
     for e in flags.Emojis:
         await message.add_reaction(bot.get_emoji(e))
 
