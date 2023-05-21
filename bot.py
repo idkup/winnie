@@ -19,6 +19,7 @@ class ReactionRoleFlags(commands.FlagConverter):
 
 
 MAGMA_GUILD = 234822474611687424
+IRIZ_GUILD = 1102367514786279424
 REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907]
 
 intents = discord.Intents.default()
@@ -315,6 +316,8 @@ Reminder:
 -If you break a rule you will be warned.\
  If you break rules repeatedly you will be put into Time Out and further action may be taken.
 -Please read over the pins or descriptions of each channel before messaging.""")
+    elif member.guild.id == IRIZ_GUILD:
+        await bot.get_channel(1109581230372036719).send(f"Hey <@{member.id}>! Welcome to {member.guild.name}! :blap: Please check out <#1109595434541928488> and <#1109582389337931907>!")
 
 
 @bot.event
@@ -397,15 +400,14 @@ async def on_raw_reaction_add(payload):
     if "!g" not in message.content:
         return
     for react in message.reactions:
-        if react.custom_emoji:
-            if react.emoji.id == 314146023243251712:
-                users = await react.users().flatten()
-                try:
-                    users.remove(bot.user)
-                except ValueError:
-                    pass
-                winner = random.choice(users)
-                await channel.send(f"{winner.mention} has won {message.content.replace('!g', '').strip()} from {message.author.mention}!")
+        if str(react.emoji) == 314146023243251712:
+            users = [user async for user in react.users()]
+            try:
+                users.remove(bot.user)
+            except ValueError:
+                break
+            winner = random.choice(users)
+            await channel.send(f"{winner.mention} has won {message.content.replace('!g', '').strip()} from {message.author.mention}!")
 
 
 @bot.event
@@ -422,20 +424,6 @@ async def on_raw_reaction_remove(payload):
             role_id = int(re.search(r'(?<=\<@&)(.*?)(?=>)', line)[1])
             if str(payload.emoji)[1:-1] in line:
                 await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
-
-
-# @bot.event
-# async def on_ready():
-#     channel = bot.get_channel(863188820325695508)
-#     message = await channel.fetch_message(864985245178527765)
-#     await message.edit(content="""React with the following to get roles:
-# :one: : Summoner's Rift
-# :two: : Howling Abyss
-# :three: : Teamfight Tactics
-# :four: : Party Games
-# :five: : Movies
-# :six: : Valorant""")
-#     await message.add_reaction("6️⃣")
 
 
 bot.run(key)
