@@ -23,6 +23,8 @@ REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907]
 
 intents = discord.Intents.default()
 intents.members = True
+intents.message_content = True
+
 bot = commands.Bot(command_prefix='%', intents=intents)
 spam_horizon = datetime.datetime(year=1000, month=1, day=1)
 
