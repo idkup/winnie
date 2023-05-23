@@ -7,12 +7,13 @@ import pickle
 import json
 from quote_db import QuoteDB
 from quoted import Quoted
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 # REACTION ROLES
 class ReactionRoleFlags(commands.FlagConverter):
     Title: str
+    Description: Optional[str]
     Emojis: Tuple[int, ...]
     Roles: Tuple[int, ...]
     Unique: bool = False
@@ -176,11 +177,9 @@ async def data(ctx, args):
 @bot.command()
 async def generate_reaction_roles(ctx, *, flags: ReactionRoleFlags):
     embed = discord.Embed(title=flags.Title)
-    desc = ""
+    desc = flags.Description
     if flags.Unique:
-        desc += "*You may only select one of the following roles.*\n"
-    else:
-        desc += "*You may select as many of the following roles as you please.*\n"
+        desc += "\n*You may only select one of the following roles.*\n\n"
     for e, r in zip(flags.Emojis, flags.Roles):
         desc += f"{bot.get_emoji(e)} <@&{r}>\n"
     embed.description = desc
@@ -317,7 +316,8 @@ Reminder:
  If you break rules repeatedly you will be put into Time Out and further action may be taken.
 -Please read over the pins or descriptions of each channel before messaging.""")
     elif member.guild.id == IRIZ_GUILD:
-        await bot.get_channel(1109581230372036719).send(f"Hey <@{member.id}>! Welcome to {member.guild.name}! :blap: Please check out <#1109595434541928488> and <#1109582389337931907>!")
+        await bot.get_channel(1109581230372036719).send(f"Hey <@{member.id}>! Welcome to {member.guild.name}! {str(bot.get_emoji(1109943681487753226))} Please check out <#1109582389337931907>! I hope you enjoy your stay!")
+        await member.add_roles(1109963220812300374)
 
 
 @bot.event
