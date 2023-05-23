@@ -177,7 +177,7 @@ async def data(ctx, args):
 @bot.command()
 async def generate_reaction_roles(ctx, *, flags: ReactionRoleFlags):
     embed = discord.Embed(title=flags.Title)
-    desc = flags.Description
+    desc = flags.Description or ""
     if flags.Unique:
         desc += "\n*You may only select one of the following roles.*\n\n"
     for e, r in zip(flags.Emojis, flags.Roles):
