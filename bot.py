@@ -317,7 +317,7 @@ Reminder:
 -Please read over the pins or descriptions of each channel before messaging.""")
     elif member.guild.id == IRIZ_GUILD:
         await bot.get_channel(1109581230372036719).send(f"Hey <@{member.id}>! Welcome to {member.guild.name}! {str(bot.get_emoji(1109943681487753226))} Please check out <#1109582389337931907>! I hope you enjoy your stay!")
-        await member.add_roles(1109963220812300374)
+        await member.add_roles(member.guild.get_role(1109963220812300374))
 
 
 @bot.event
