@@ -378,7 +378,7 @@ async def on_raw_reaction_add(payload):
     channel = bot.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embeds = message.embeds
-    # REACTION ROLES
+   # REACTION ROLES
     if payload.channel_id in REACTION_ROLES_CHANNELS and message.author == bot.user:
         parse = embeds[0].description
         unique = "*You may only select one of the following roles.*" in parse
@@ -388,7 +388,7 @@ async def on_raw_reaction_add(payload):
             if str(payload.emoji) in line:
                 await guild.get_member(payload.user_id).add_roles(guild.get_role(role_id))
                 continue
-            elif unique:
+            if unique:
                 await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
 
     if payload.channel_id != 608098962305581070:
@@ -400,7 +400,7 @@ async def on_raw_reaction_add(payload):
     if "!g" not in message.content:
         return
     for react in message.reactions:
-        if str(react.emoji) == 314146023243251712:
+        if str(react.emoji) == '<:magma:314146023243251712>':
             users = [user async for user in react.users()]
             try:
                 users.remove(bot.user)
