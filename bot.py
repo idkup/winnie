@@ -383,7 +383,7 @@ async def on_message(message):
             return await bot.process_commands(message)
         if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
             if message.author.guild_permissions.manage_messages:
-                to_add = int(re.search("-?\d+", message)[0])
+                to_add = int(re.search("-?\d+", txt)[0])
                 culprit = "Someone"
                 if message.mentions:
                     culprit = message.mentions[0]
