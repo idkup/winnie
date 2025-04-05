@@ -237,10 +237,10 @@ async def testlog(ctx):
     if ctx.guild.id == LISS_GUILD:
         e = discord.Embed(title="Current Points")
 
-        e.add_field(name="Slytherin", value=points_db[ROLE_SLYTHERIN])
-        e.add_field(name="Gryffindor", value=points_db[ROLE_GRYFFINDOR])
-        e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
-        e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
+        #e.add_field(name="Slytherin", value=points_db[ROLE_SLYTHERIN])
+        #e.add_field(name="Gryffindor", value=points_db[ROLE_GRYFFINDOR])
+        #e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
+        #e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
 
         #await ctx.send(embed=e)
         await ctx.send(points_db)
