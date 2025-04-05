@@ -403,7 +403,7 @@ async def on_message(message):
                     # Skip if '@' is immediately before the number
                     if start > 0 and txt[start - 1] == '@':
                         continue
-                    to_add = match[0]
+                    to_add = int(match[0])
                     break
                 culprit = "Someone"
                 if message.mentions:
