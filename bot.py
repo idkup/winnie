@@ -260,7 +260,7 @@ async def purge(ctx, ct=10):
 async def quote(ctx, name=None):
     has_quotes = []
     for u in quote_db.quoted:
-        if len(u.quotes) > 0:
+        if len(u.quotes) > 0 and ctx.guild.get_member(u.uid) is not None:
             has_quotes.append(u)
     if not name:
         user = random.choice(has_quotes)
