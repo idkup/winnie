@@ -62,7 +62,7 @@ try:
         points_db = json.load(pts)
         pts.close()
 except FileNotFoundError:
-    points_db = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
+    points_db = {str(ROLE_SLYTHERIN): 0, str(ROLE_GRYFFINDOR): 0, str(ROLE_RAVENCLAW): 0, str(ROLE_HUFFLEPUFF): 0}
 
 
 @bot.command()
@@ -233,17 +233,16 @@ async def pick(ctx, *args):
     await ctx.send(random.choice([*args]))
 
 @bot.command()
-async def testlog(ctx):
+async def houses(ctx):
     if ctx.guild.id == LISS_GUILD:
         e = discord.Embed(title="Current Points")
 
-        #e.add_field(name="Slytherin", value=points_db[ROLE_SLYTHERIN])
-        #e.add_field(name="Gryffindor", value=points_db[ROLE_GRYFFINDOR])
-        #e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
-        #e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
+        e.add_field(name="Slytherin", value=points_db[ROLE_SLYTHERIN])
+        e.add_field(name="Gryffindor", value=points_db[ROLE_GRYFFINDOR])
+        e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
+        e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
 
-        #await ctx.send(embed=e)
-        await ctx.send(points_db)
+        await ctx.send(embed=e)
 
 @bot.command()
 async def purge(ctx, ct=10):
@@ -290,9 +289,10 @@ async def reset_points(ctx):
     global points_db
     if ctx.guild.id != LISS_GUILD or not ctx.author.guild_permissions.manage_messages:
         return
-    points_db = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
+    points_db = {str(ROLE_SLYTHERIN): 0, str(ROLE_GRYFFINDOR): 0, str(ROLE_RAVENCLAW): 0, str(ROLE_HUFFLEPUFF): 0}
     with open('data/points.json', 'w+') as f:
         json.dump(points_db, f)
+    return await ctx.send("All points reset.")
 
 
 @bot.command()
@@ -402,16 +402,16 @@ async def on_message(message):
                     culprit = message.mentions[0].id
                 if "slytherin" in txt:
                     house = "Slytherin"
-                    points_db[ROLE_SLYTHERIN] += to_add
+                    points_db[str(ROLE_SLYTHERIN)] += to_add
                 elif "gryffindor" in txt:
                     house = "Gryffindor"
-                    points_db[ROLE_GRYFFINDOR] += to_add
+                    points_db[str(ROLE_GRYFFINDOR)] += to_add
                 elif "ravenclaw" in txt:
                     house = "Ravenclaw"
-                    points_db[ROLE_RAVENCLAW] += to_add
+                    points_db[str(ROLE_RAVENCLAW)] += to_add
                 elif "hufflepuff" in txt:
                     house = "Hufflepuff"
-                    points_db[ROLE_HUFFLEPUFF] += to_add
+                    points_db[str(ROLE_HUFFLEPUFF)] += to_add
                 else:
                     return
 
