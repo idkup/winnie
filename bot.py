@@ -62,7 +62,7 @@ try:
         points_db = pts
         pts.close()
 except FileNotFoundError:
-    pts = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
+    points_db = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
 
 
 @bot.command()
@@ -237,10 +237,10 @@ async def testlog(ctx):
     if ctx.guild.id == LISS_GUILD:
         e = discord.Embed(title="Current Points")
 
-        e.add_field(name="Slytherin", value=pts[ROLE_SLYTHERIN])
-        e.add_field(name="Gryffindor", value=pts[ROLE_GRYFFINDOR])
-        e.add_field(name="Ravenclaw", value=pts[ROLE_RAVENCLAW])
-        e.add_field(name="Hufflepuff", value=pts[ROLE_HUFFLEPUFF])
+        e.add_field(name="Slytherin", value=points_db[ROLE_SLYTHERIN])
+        e.add_field(name="Gryffindor", value=points_db[ROLE_GRYFFINDOR])
+        e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
+        e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
 
         await ctx.send(embed=e)
 
@@ -283,6 +283,15 @@ async def remove_quote(ctx, quote_text):
             u.quotes.remove(quote_text)
             return await ctx.send("Quote removed from database.")
     return await ctx.send("Quote not found in database.")
+
+@bot.command()
+async def reset_points(ctx):
+    global points_db
+    if ctx.guild.id != LISS_GUILD or not ctx.author.guild_permissions.manage_messages:
+        return
+    points_db = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
+    with open('data/points.json', 'w+') as f:
+        json.dump(points_db, f)
 
 
 @bot.command()
@@ -392,23 +401,23 @@ async def on_message(message):
                     culprit = message.mentions[0].id
                 if "slytherin" in txt:
                     house = "Slytherin"
-                    pts[ROLE_SLYTHERIN] += to_add
+                    points_db[ROLE_SLYTHERIN] += to_add
                 elif "gryffindor" in txt:
                     house = "Gryffindor"
-                    pts[ROLE_GRYFFINDOR] += to_add
+                    points_db[ROLE_GRYFFINDOR] += to_add
                 elif "ravenclaw" in txt:
                     house = "Ravenclaw"
-                    pts[ROLE_RAVENCLAW] += to_add
+                    points_db[ROLE_RAVENCLAW] += to_add
                 elif "hufflepuff" in txt:
                     house = "Hufflepuff"
-                    pts[ROLE_HUFFLEPUFF] += to_add
+                    points_db[ROLE_HUFFLEPUFF] += to_add
                 else:
                     return
 
                 await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{culprit}> has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
 
                 with open('data/points.json', 'w+') as f:
-                    json.dump(pts, f)
+                    json.dump(points_db, f)
 
         if "iriz" in txt and message.guild.id in [MAGMA_GUILD, IRIZ_GUILD]:
             iriz = random.choice(["what", "WHAT", "wat", "WAT", "wot", "WOT", "wut", "WUT", "IM HUNGRY"])
