@@ -400,14 +400,13 @@ async def on_message(message):
                 matches = list(re.finditer(number_pattern, txt))
                 for match in matches:
                     start = match.start()
-                    # Skip if '@' is immediately before the number
                     if start > 0 and txt[start - 1] == '@':
                         continue
                     to_add = int(match[0])
                     break
                 culprit = "Someone"
                 if message.mentions:
-                    culprit = message.mentions[0].id
+                    culprit = f"<@{message.mentions[0].id}>"
                 if "slytherin" in txt:
                     house = "Slytherin"
                     points_db[str(ROLE_SLYTHERIN)] += to_add
@@ -423,7 +422,7 @@ async def on_message(message):
                 else:
                     return
 
-                await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{culprit}> has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
+                await bot.get_channel(POINT_LOG_CHANNEL).send(f"{culprit} has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
 
                 with open('data/points.json', 'w+') as f:
                     json.dump(points_db, f)
