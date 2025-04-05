@@ -422,10 +422,13 @@ async def on_message(message):
                 else:
                     return
 
-                splits = re.split(r"([-+]?\d+)|(slytherin)|(gryffindor)|(ravenclaw)|(hufflepuff)|(pts)|(points)", txt, flags=re.IGNORECASE)
+                splits = re.split(r"[-+]?\d+|slytherin|gryffindor|ravenclaw|hufflepuff|pts|points", txt, flags=re.IGNORECASE)
                 splits = [x for x in splits if x is not None]
                 reason = max(splits, key=len)
-                reason = reason.strip()
+                if len(reason) > 3:
+                    reason = reason.strip()
+                else:
+                    reason = "None"
 
                 await bot.get_channel(POINT_LOG_CHANNEL).send(f"{culprit} has earned {house} {to_add} points courtesy of <@{message.author.id}>!\nReason: {reason}")
 
