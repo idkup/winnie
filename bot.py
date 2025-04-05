@@ -242,7 +242,8 @@ async def testlog(ctx):
         e.add_field(name="Ravenclaw", value=points_db[ROLE_RAVENCLAW])
         e.add_field(name="Hufflepuff", value=points_db[ROLE_HUFFLEPUFF])
 
-        await ctx.send(embed=e)
+        #await ctx.send(embed=e)
+        await ctx.send(points_db)
 
 @bot.command()
 async def purge(ctx, ct=10):
