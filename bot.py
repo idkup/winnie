@@ -236,8 +236,12 @@ async def pick(ctx, *args):
 async def testlog(ctx):
     if ctx.guild.id == LISS_GUILD:
         e = discord.Embed(title="Current Points")
-        for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
-            e.add_field(name=f"<@&{r}>", value=pts[r])
+
+        e.add_field(name="Slytherin", value=pts[ROLE_SLYTHERIN])
+        e.add_field(name="Gryffindor", value=pts[ROLE_GRYFFINDOR])
+        e.add_field(name="Ravenclaw", value=pts[ROLE_RAVENCLAW])
+        e.add_field(name="Hufflepuff", value=pts[ROLE_HUFFLEPUFF])
+
         await ctx.send(embed=e)
 
 @bot.command()
@@ -382,7 +386,7 @@ async def on_message(message):
             return await bot.process_commands(message)
         if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
             if message.author.guild_permissions.manage_messages:
-                to_add = int(re.search("-?\d+", txt)[0])
+                to_add = int(re.search("^@-?\d+", txt)[0])
                 culprit = "Someone"
                 if message.mentions:
                     culprit = message.mentions[0].id
