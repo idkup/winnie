@@ -21,7 +21,15 @@ class ReactionRoleFlags(commands.FlagConverter):
 
 MAGMA_GUILD = 234822474611687424
 IRIZ_GUILD = 1102367514786279424
-REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907]
+LISS_GUILD = 1357538074183336087
+
+REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907, 1357577842271064265]
+POINT_LOG_CHANNEL = 1357885239514628186
+
+ROLE_SLYTHERIN = 1357741779449024582
+ROLE_GRYFFINDOR = 1357741193919729894
+ROLE_RAVENCLAW = 1357745890009419796
+ROLE_HUFFLEPUFF = 1357746016786579476
 
 intents = discord.Intents.default()
 intents.members = True
@@ -48,6 +56,13 @@ try:
         q.close()
 except FileNotFoundError:
     quote_db = QuoteDB()
+
+try:
+    with open('data/points.json', 'r') as pts:
+        points_db = pts
+        pts.close()
+except FileNotFoundError:
+    pts = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
 
 
 @bot.command()
@@ -217,6 +232,14 @@ async def learn(ctx, pokemon, *args):
 async def pick(ctx, *args):
     await ctx.send(random.choice([*args]))
 
+@bot.command()
+async def points(ctx):
+    if ctx.guild.id != LISS_GUILD:
+        return
+    e = discord.Embed(title="Current Points")
+    for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
+        e.add_field(name=f"<@&{r}>", value=pts[r])
+    await ctx.send(embed=e)
 
 @bot.command()
 async def purge(ctx, ct=10):
@@ -358,14 +381,40 @@ async def on_message(message):
             await message.delete()
         if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
             return await bot.process_commands(message)
-        if "iriz" in txt:
+        if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
+            if message.author.guild_permissions.manage_messages:
+                to_add = int(re.search("-?\d+", message)[0])
+                culprit = "Someone"
+                if message.mentions:
+                    culprit = message.mentions[0]
+                if "slytherin" in txt:
+                    house = "Slytherin"
+                    pts[ROLE_SLYTHERIN] += to_add
+                elif "gryffindor" in txt:
+                    house = "Gryffindor"
+                    pts[ROLE_GRYFFINDOR] += to_add
+                elif "ravenclaw" in txt:
+                    house = "Ravenclaw"
+                    pts[ROLE_RAVENCLAW] += to_add
+                elif "hufflepuff" in txt:
+                    house = "Hufflepuff"
+                    pts[ROLE_HUFFLEPUFF] += to_add
+                else:
+                    return
+
+                await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{culprit.id}> has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
+
+                with open('data/points.json', 'w+') as f:
+                    json.dump(pts, f)
+
+        if "iriz" in txt and message.guild.id in [MAGMA_GUILD, IRIZ_GUILD]:
             iriz = random.choice(["what", "WHAT", "wat", "WAT", "wot", "WOT", "wut", "WUT", "IM HUNGRY"])
             await message.channel.send(iriz)
             spam_horizon = datetime.datetime.now()
-        elif "no u" in txt:
+        elif "no u" in txt and message.guild.id == MAGMA_GUILD:
             await message.channel.send(message.content)
             spam_horizon = datetime.datetime.now()
-        elif "iron" in txt:
+        elif "iron" in txt and message.guild.id in [MAGMA_GUILD, IRIZ_GUILD]:
             iron = random.choice([":frog:", bot.get_emoji(314143184840294400), bot.get_emoji(549410120480587776)])
             await message.channel.send(iron)
             spam_horizon = datetime.datetime.now()
