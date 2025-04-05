@@ -235,6 +235,7 @@ async def pick(ctx, *args):
 @bot.command()
 async def points(ctx):
     if ctx.guild.id != LISS_GUILD:
+        await ctx.send('a')
         return
     e = discord.Embed(title="Current Points")
     for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
