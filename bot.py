@@ -420,7 +420,7 @@ async def on_message(message):
                     house = "Hufflepuff"
                     points_db[str(ROLE_HUFFLEPUFF)] += to_add
                 else:
-                    return
+                    return await bot.process_commands(message)
 
                 splits = re.split(r"[-+]?\d+|slytherin|gryffindor|ravenclaw|hufflepuff|pts|points", txt, flags=re.IGNORECASE)
                 splits = [x for x in splits if x is not None]
@@ -466,6 +466,7 @@ async def on_raw_reaction_add(payload):
             if unique:
                 await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
 
+    # MAGMA GIVEAWAYS
     if payload.channel_id != 608098962305581070:
         return
     if str(payload.emoji) != "❌":
