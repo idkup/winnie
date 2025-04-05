@@ -422,7 +422,10 @@ async def on_message(message):
                 else:
                     return
 
-                await bot.get_channel(POINT_LOG_CHANNEL).send(f"{culprit} has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
+                splits = re.split(r"([-+]?\d+)|(slytherin)|(gryffindor)|(ravenclaw)|(hufflepuff)|(pts)|(points)", txt, flags=re.IGNORECASE)
+                reason = max(splits, key=len)
+
+                await bot.get_channel(POINT_LOG_CHANNEL).send(f"{culprit} has earned {house} {to_add} points courtesy of <@{message.author.id}>!\nReason: {reason}")
 
                 with open('data/points.json', 'w+') as f:
                     json.dump(points_db, f)
