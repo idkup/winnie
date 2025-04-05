@@ -235,7 +235,6 @@ async def pick(ctx, *args):
 @bot.command()
 async def points(ctx):
     if ctx.guild.id != LISS_GUILD:
-        await ctx.send('a')
         return
     e = discord.Embed(title="Current Points")
     for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
@@ -387,7 +386,7 @@ async def on_message(message):
                 to_add = int(re.search("-?\d+", txt)[0])
                 culprit = "Someone"
                 if message.mentions:
-                    culprit = message.mentions[0]
+                    culprit = message.mentions[0].id
                 if "slytherin" in txt:
                     house = "Slytherin"
                     pts[ROLE_SLYTHERIN] += to_add
@@ -403,7 +402,7 @@ async def on_message(message):
                 else:
                     return
 
-                await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{culprit.id}> has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
+                await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{culprit}> has earned {house} {to_add} points, courtesy of <@{message.author.id}>!")
 
                 with open('data/points.json', 'w+') as f:
                     json.dump(pts, f)
