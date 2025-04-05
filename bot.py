@@ -59,7 +59,7 @@ except FileNotFoundError:
 
 try:
     with open('data/points.json', 'r') as pts:
-        points_db = pts
+        points_db = json.load(pts)
         pts.close()
 except FileNotFoundError:
     points_db = {ROLE_SLYTHERIN: 0, ROLE_GRYFFINDOR: 0, ROLE_RAVENCLAW: 0, ROLE_HUFFLEPUFF: 0}
