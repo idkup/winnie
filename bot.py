@@ -285,7 +285,7 @@ async def remove_quote(ctx, quote_text):
     return await ctx.send("Quote not found in database.")
 
 @bot.command()
-async def reset_points(ctx):
+async def reset(ctx):
     global points_db
     if ctx.guild.id != LISS_GUILD or not ctx.author.guild_permissions.manage_messages:
         return
@@ -396,7 +396,15 @@ async def on_message(message):
             return await bot.process_commands(message)
         if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
             if message.author.guild_permissions.manage_messages:
-                to_add = int(re.search("^@-?\d+", txt)[0])
+                number_pattern = r"[-+]?\d+"
+                matches = list(re.finditer(number_pattern, txt))
+                for match in matches:
+                    start = match.start()
+                    # Skip if '@' is immediately before the number
+                    if start > 0 and txt[start - 1] == '@':
+                        continue
+                    to_add = match[0]
+                    break
                 culprit = "Someone"
                 if message.mentions:
                     culprit = message.mentions[0].id
