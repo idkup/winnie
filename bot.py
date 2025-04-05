@@ -233,13 +233,12 @@ async def pick(ctx, *args):
     await ctx.send(random.choice([*args]))
 
 @bot.command()
-async def points(ctx):
-    if ctx.guild.id != LISS_GUILD:
-        return
-    e = discord.Embed(title="Current Points")
-    for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
-        e.add_field(name=f"<@&{r}>", value=pts[r])
-    await ctx.send(embed=e)
+async def testlog(ctx):
+    if ctx.guild.id == LISS_GUILD:
+        e = discord.Embed(title="Current Points")
+        for r in [ROLE_SLYTHERIN, ROLE_GRYFFINDOR, ROLE_RAVENCLAW, ROLE_HUFFLEPUFF]:
+            e.add_field(name=f"<@&{r}>", value=pts[r])
+        await ctx.send(embed=e)
 
 @bot.command()
 async def purge(ctx, ct=10):
