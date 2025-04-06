@@ -104,7 +104,7 @@ async def add_quote(ctx, alias, quote_text):
             qf.close()
         if ctx.guild.id in STARBOARD_CHANNELS.keys():
             e = discord.Embed()
-            e.set_author(alias)
+            e.set_author(name=alias)
             e.description = quote_text
             await bot.get_channel(STARBOARD_CHANNELS[ctx.guild.id]).send(embed=e)
         return await ctx.send("Quote added.")
@@ -504,8 +504,7 @@ async def on_raw_reaction_add(payload):
                         pickle.dump(quote_db, qf)
                         qf.close()
                     e = discord.Embed()
-                    author = str(message.author.name)
-                    e.set_author(author)
+                    e.set_author(name=message.author.name)
                     e.description = message.content
                     await bot.get_channel(STARBOARD_CHANNELS[guild.id]).send(embed=e)
                 break
