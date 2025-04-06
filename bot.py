@@ -25,11 +25,14 @@ LISS_GUILD = 1357538074183336087
 
 REACTION_ROLES_CHANNELS = [863188820325695508, 1109582389337931907, 1357577842271064265]
 POINT_LOG_CHANNEL = 1357885239514628186
+STARBOARD_CHANNELS = {LISS_GUILD: 1358358519291842671}
 
 ROLE_SLYTHERIN = 1357741779449024582
 ROLE_GRYFFINDOR = 1357741193919729894
 ROLE_RAVENCLAW = 1357745890009419796
 ROLE_HUFFLEPUFF = 1357746016786579476
+
+STAR_THRESHOLD = 3
 
 intents = discord.Intents.default()
 intents.members = True
@@ -99,6 +102,11 @@ async def add_quote(ctx, alias, quote_text):
         with open("data/quotes.txt", "wb+") as qf:
             pickle.dump(quote_db, qf)
             qf.close()
+        if ctx.guild.id in STARBOARD_CHANNELS.keys():
+            e = discord.Embed()
+            e.set_author(alias)
+            e.description = quote_text
+            await bot.get_channel(STARBOARD_CHANNELS[ctx.guild.id]).send(embed=e)
         return await ctx.send("Quote added.")
     return await ctx.send("This is an officer-only command.")
 
@@ -465,6 +473,41 @@ async def on_raw_reaction_add(payload):
                 continue
             if unique:
                 await guild.get_member(payload.user_id).remove_roles(guild.get_role(role_id))
+
+    # STARBOARD?
+    if str(payload.emoji) == "⭐" and guild.id in STARBOARD_CHANNELS.keys():
+        for react in message.reactions:
+            if str(react.emoji) == "⭐":
+                users = [user async for user in react.users()]
+                try:
+                    users.remove(message.author)
+                except ValueError:
+                    pass
+                if len(users) == STAR_THRESHOLD:
+                    # for u in quote_db.quoted:
+                    #     if u.uid == message.author.id:
+                    #         to_quote = u
+                    #         break
+                    # else:
+                    #     new_user = Quoted(message.author.id)
+                    #     alias = message.author.name
+                    #     if alias.lower() not in quote_db.taken_aliases:
+                    #         new_user.add_alias(alias.lower())
+                    #         quote_db.add_taken_alias(alias.lower())
+                    #     else:
+                    #         await channel.send(
+                    #             f"{alias} has been taken by another user. A new alias must be manually assigned.")
+                    #     quote_db.add_user(new_user)
+                    #     to_quote = new_user
+                    # to_quote.add_quote(message.content)
+                    with open("data/quotes.txt", "wb+") as qf:
+                        pickle.dump(quote_db, qf)
+                        qf.close()
+                    e = discord.Embed()
+                    e.set_author(message.author.name)
+                    e.description = message.content
+                    await bot.get_channel(STARBOARD_CHANNELS[guild.id]).send(embed=e)
+                break
 
     # MAGMA GIVEAWAYS
     if payload.channel_id != 608098962305581070:
