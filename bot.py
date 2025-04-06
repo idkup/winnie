@@ -504,6 +504,7 @@ async def on_raw_reaction_add(payload):
                         pickle.dump(quote_db, qf)
                         qf.close()
                     e = discord.Embed()
+                    await channel.send(message.author.name)
                     e.set_author(message.author.name)
                     e.description = message.content
                     await bot.get_channel(STARBOARD_CHANNELS[guild.id]).send(embed=e)
