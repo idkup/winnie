@@ -499,8 +499,8 @@ async def on_raw_reaction_add(payload):
                                 f"{alias} has been taken by another user. A new alias must be manually assigned.")
                         quote_db.add_user(new_user)
                         to_quote = new_user
-                    if not message.attachments:
-                        to_quote.add_quote(message.content)
+                    # if not message.attachments:
+                    #     to_quote.add_quote(message.content)
                     with open("data/quotes.txt", "wb+") as qf:
                         pickle.dump(quote_db, qf)
                         qf.close()
