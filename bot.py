@@ -506,7 +506,7 @@ async def on_raw_reaction_add(payload):
                     e = discord.Embed()
                     e.set_author(name=message.author.name)
                     e.description = message.content
-                    await channel.send("asdf")
+                    e.add_field(name="Source", value=f"[Jump!]({message.jump_link})")
                     await bot.get_channel(STARBOARD_CHANNELS[guild.id]).send(embed=e)
                 break
 
