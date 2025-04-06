@@ -484,22 +484,22 @@ async def on_raw_reaction_add(payload):
                 except ValueError:
                     pass
                 if len(users) == STAR_THRESHOLD:
-                    # for u in quote_db.quoted:
-                    #     if u.uid == message.author.id:
-                    #         to_quote = u
-                    #         break
-                    # else:
-                    #     new_user = Quoted(message.author.id)
-                    #     alias = message.author.name
-                    #     if alias.lower() not in quote_db.taken_aliases:
-                    #         new_user.add_alias(alias.lower())
-                    #         quote_db.add_taken_alias(alias.lower())
-                    #     else:
-                    #         await channel.send(
-                    #             f"{alias} has been taken by another user. A new alias must be manually assigned.")
-                    #     quote_db.add_user(new_user)
-                    #     to_quote = new_user
-                    # to_quote.add_quote(message.content)
+                    for u in quote_db.quoted:
+                        if u.uid == message.author.id:
+                            to_quote = u
+                            break
+                    else:
+                        new_user = Quoted(message.author.id)
+                        alias = message.author.name
+                        if alias.lower() not in quote_db.taken_aliases:
+                            new_user.add_alias(alias.lower())
+                            quote_db.add_taken_alias(alias.lower())
+                        else:
+                            await channel.send(
+                                f"{alias} has been taken by another user. A new alias must be manually assigned.")
+                        quote_db.add_user(new_user)
+                        to_quote = new_user
+                    to_quote.add_quote(message.content)
                     with open("data/quotes.txt", "wb+") as qf:
                         pickle.dump(quote_db, qf)
                         qf.close()
@@ -507,6 +507,10 @@ async def on_raw_reaction_add(payload):
                     e.set_author(name=message.author.name)
                     e.description = message.content
                     e.add_field(name="Source", value=f"[Jump!]({message.jump_url})")
+                    for a in message.attachments:
+                        if a.content_type:
+                            if "image/" in a.content_type:
+                                e.set_image(url=a.url)
                     await bot.get_channel(STARBOARD_CHANNELS[guild.id]).send(embed=e)
                 break
 
