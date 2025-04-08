@@ -477,6 +477,7 @@ async def on_raw_reaction_add(payload):
 
     # STARBOARD?
     if str(payload.emoji) == "⭐" and guild.id in STARBOARD_CHANNELS.keys():
+        await channel.send('asdf')
         for react in message.reactions:
             if str(react.emoji) == "⭐":
                 users = [user async for user in react.users()]
@@ -484,7 +485,7 @@ async def on_raw_reaction_add(payload):
                     users.remove(message.author)
                 except ValueError:
                     pass
-                print(users)
+                await channel.send(users)
                 if len(users) == STAR_THRESHOLD:
                     for u in quote_db.quoted:
                         if u.uid == message.author.id:
