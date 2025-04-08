@@ -484,6 +484,7 @@ async def on_raw_reaction_add(payload):
                     users.remove(message.author)
                 except ValueError:
                     pass
+                print(users)
                 if len(users) == STAR_THRESHOLD:
                     for u in quote_db.quoted:
                         if u.uid == message.author.id:
