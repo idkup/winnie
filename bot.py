@@ -469,7 +469,6 @@ async def on_raw_reaction_add(payload):
         parse = embeds[0].description
         unique = "*You may only select one of the following roles.*" in parse
         parsed_lines = [x for x in parse.splitlines()[1:] if x is not None]
-        await guild.get_member()
         for line in parsed_lines:
             role_id = int(re.search(r'(?<=\<@&)(.*?)(?=>)', line)[1])
             if str(payload.emoji) in line:
