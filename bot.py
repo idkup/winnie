@@ -547,7 +547,7 @@ async def on_raw_reaction_remove(payload):
     # REACTION ROLES
     if payload.channel_id in REACTION_ROLES_CHANNELS and message.author == bot.user:
         parse = embeds[0].description
-        parsed_lines = parse.splitlines()[1:]
+        parsed_lines = [x for x in parse.splitlines()[1:] if x]
         for line in parsed_lines:
             role_id = int(re.search(r'(?<=\<@&)(.*?)(?=>)', line)[1])
             if str(payload.emoji)[1:-1] in line:
