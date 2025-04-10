@@ -204,6 +204,8 @@ async def generate_reaction_roles(ctx, *, flags: ReactionRoleFlags):
     desc = flags.Description or ""
     if flags.Unique:
         desc += "\n*You may only select one of the following roles.*\n\n"
+    else:
+        desc += "\n*You may select any amount of the following roles.*\n\n"
     for e, r in zip(flags.Emojis, flags.Roles):
         desc += f"{bot.get_emoji(e)} <@&{r}>\n"
     embed.description = desc
