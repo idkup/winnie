@@ -513,19 +513,19 @@ async def on_message(message):
             lg = bot.get_guild(LISS_GUILD)
             member = lg.get_member(message.author.id)
             if member is not None:
-                if passwords[str(ROLE_SLYTHERIN)] in message.content and passwords[str(ROLE_SLYTHERIN)] is not None:
+                if passwords[str(ROLE_SLYTHERIN)] is not None and passwords[str(ROLE_SLYTHERIN)] in message.content:
                     if lg.get_role(ROLE_SLYTHERIN) not in member.roles:
                         member.add_roles(lg.get_role(ACCESS_SLYTHERIN))
                         await message.channel.send("You guessed a password!")
-                if passwords[str(ROLE_GRYFFINDOR)] in message.content and passwords[str(ROLE_GRYFFINDOR)] is not None:
+                if passwords[str(ROLE_GRYFFINDOR)] is not None and passwords[str(ROLE_GRYFFINDOR)] in message.content:
                     if lg.get_role(ROLE_GRYFFINDOR) not in member.roles:
                         member.add_roles(lg.get_role(ACCESS_GRYFFINDOR))
                         await message.channel.send("You guessed a password!")
-                if passwords[str(ROLE_RAVENCLAW)] in message.content and passwords[str(ROLE_RAVENCLAW)] is not None:
+                if passwords[str(ROLE_RAVENCLAW)] is not None and passwords[str(ROLE_RAVENCLAW)] in message.content:
                     if lg.get_role(ROLE_RAVENCLAW) not in member.roles:
                         member.add_roles(lg.get_role(ACCESS_RAVENCLAW))
                         await message.channel.send("You guessed a password!")
-                if passwords[str(ROLE_HUFFLEPUFF)] in message.content and passwords[str(ROLE_HUFFLEPUFF)] is not None:
+                if passwords[str(ROLE_HUFFLEPUFF)] is not None and passwords[str(ROLE_HUFFLEPUFF)] in message.content:
                     if lg.get_role(ROLE_HUFFLEPUFF) not in member.roles:
                         member.add_roles(lg.get_role(ACCESS_HUFFLEPUFF))
                         await message.channel.send("You guessed a password!")
