@@ -211,7 +211,7 @@ async def data(ctx, args):
 
 
 @bot.command()
-async def dorm_password(ctx, args):
+async def dorm_password(ctx, *args):
     async def clear_access(guild, role):
         for m in guild.members:
             if role in m.roles:
