@@ -33,6 +33,11 @@ ROLE_GRYFFINDOR = 1357741193919729894
 ROLE_RAVENCLAW = 1357745890009419796
 ROLE_HUFFLEPUFF = 1357746016786579476
 
+ACCESS_SLYTHERIN = 1359768475521912944
+ACCESS_GRYFFINDOR = 1359768519046074400
+ACCESS_RAVENCLAW = 1359768549815484438
+ACCESS_HUFFLEPUFF = 1359768594573168662
+
 STAR_THRESHOLD = 5
 
 intents = discord.Intents.default()
@@ -67,6 +72,13 @@ try:
         pts.close()
 except FileNotFoundError:
     points_db = {str(ROLE_SLYTHERIN): 0, str(ROLE_GRYFFINDOR): 0, str(ROLE_RAVENCLAW): 0, str(ROLE_HUFFLEPUFF): 0}
+
+try:
+    with open('data/passwords.json', 'r') as pws:
+        passwords = json.load(pws)
+        pws.close()
+except FileNotFoundError:
+    passwords = {str(ROLE_SLYTHERIN): None, str(ROLE_GRYFFINDOR): None, str(ROLE_RAVENCLAW): None, str(ROLE_HUFFLEPUFF): None}
 
 
 @bot.command()
@@ -196,6 +208,47 @@ async def data(ctx, args):
     except KeyError:
         e.add_field(name="Abilities:", value=", ".join(entry["abilities"].values()))
     await ctx.send(embed=e)
+
+
+@bot.command()
+async def dorm_password(ctx, args):
+    async def clear_access(guild, role):
+        for m in guild.members:
+            if role in m.roles:
+                await m.remove_roles(role)
+
+    global passwords
+    if isinstance(ctx.channel, discord.DMChannel):
+        lg = bot.get_guild(LISS_GUILD)
+        member = lg.get_member(ctx.author.id)
+        if member is None:
+            return await ctx.send("This command is for a server you are not in.")
+        if not member.guild_permissions.manage_messages:
+            return await ctx.send("You are not a prefect.")
+        if not args:
+            new_pass = None
+        else:
+            new_pass = " ".join(args)
+        if lg.get_role(ROLE_SLYTHERIN) in member.roles:
+            await clear_access(lg, lg.get_role(ACCESS_SLYTHERIN))
+            passwords[str(ROLE_SLYTHERIN)] = new_pass
+        elif lg.get_role(ROLE_GRYFFINDOR) in member.roles:
+            await clear_access(lg, lg.get_role(ACCESS_GRYFFINDOR))
+            passwords[str(ROLE_GRYFFINDOR)] = new_pass
+        elif lg.get_role(ROLE_RAVENCLAW) in member.roles:
+            await clear_access(lg, lg.get_role(ACCESS_RAVENCLAW))
+            passwords[str(ROLE_RAVENCLAW)] = new_pass
+        elif lg.get_role(ROLE_HUFFLEPUFF) in member.roles:
+            await clear_access(lg, lg.get_role(ACCESS_HUFFLEPUFF))
+            passwords[str(ROLE_HUFFLEPUFF)] = new_pass
+        else:
+            return await ctx.send("You aren't associated with any house.")
+
+        with open('data/passwords.json', 'w+') as f:
+            json.dump(passwords, f)
+
+        return await ctx.send(f"Password updated to: {new_pass}. Access has been purged.")
+
 
 
 @bot.command()
@@ -455,6 +508,28 @@ async def on_message(message):
             iron = random.choice([":frog:", bot.get_emoji(314143184840294400), bot.get_emoji(549410120480587776)])
             await message.channel.send(iron)
             spam_horizon = datetime.datetime.now()
+
+        if isinstance(message.channel, discord.DMChannel):
+            lg = bot.get_guild(LISS_GUILD)
+            member = lg.get_member(message.author.id)
+            if member is not None:
+                if passwords[str(ROLE_SLYTHERIN)] in message.content and passwords[str(ROLE_SLYTHERIN)] is not None:
+                    if lg.get_role(ROLE_SLYTHERIN) not in member.roles:
+                        member.add_roles(lg.get_role(ACCESS_SLYTHERIN))
+                        await message.channel.send("You guessed a password!")
+                if passwords[str(ROLE_GRYFFINDOR)] in message.content and passwords[str(ROLE_GRYFFINDOR)] is not None:
+                    if lg.get_role(ROLE_GRYFFINDOR) not in member.roles:
+                        member.add_roles(lg.get_role(ACCESS_GRYFFINDOR))
+                        await message.channel.send("You guessed a password!")
+                if passwords[str(ROLE_RAVENCLAW)] in message.content and passwords[str(ROLE_RAVENCLAW)] is not None:
+                    if lg.get_role(ROLE_RAVENCLAW) not in member.roles:
+                        member.add_roles(lg.get_role(ACCESS_RAVENCLAW))
+                        await message.channel.send("You guessed a password!")
+                if passwords[str(ROLE_HUFFLEPUFF)] in message.content and passwords[str(ROLE_HUFFLEPUFF)] is not None:
+                    if lg.get_role(ROLE_HUFFLEPUFF) not in member.roles:
+                        member.add_roles(lg.get_role(ACCESS_HUFFLEPUFF))
+                        await message.channel.send("You guessed a password!")
+
     await bot.process_commands(message)
 
 
