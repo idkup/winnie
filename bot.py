@@ -255,7 +255,7 @@ async def cast(ctx, *args):
             return
         target = ctx.message.mentions[0]
         if lg.get_role(STUPEFIED) in target.roles:
-            target.remove_roles(lg.get_role(STUPEFIED))
+            await target.remove_roles(lg.get_role(STUPEFIED))
             return await ctx.send(f"<@{ctx.author.id}> cast RENNERVATE and freed <@{target.id}> from STUPEFY!")
         else:
             return await ctx.send(f"<@{target.id}> is not stupefied!")
