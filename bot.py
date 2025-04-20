@@ -164,6 +164,9 @@ async def cast(ctx, sp, *args):
 
     lg = bot.get_guild(LISS_GUILD)
 
+    for channel in lg.channels:
+        await channel.set_permissions(lg.get_role(STUPEFIED), send_messages = False, speak = False)
+
     global SPELLS_TO_RESOLVE
 
     if sp.lower() == "stupefy":
