@@ -216,11 +216,13 @@ async def cast(ctx, *args):
         try:
             await target.remove_roles(*temp_roles)
         except discord.Forbidden:
+            for role in temp_roles:
+                await target.add_roles(role)
             return await ctx.send("The Killing Curse was blocked by plot armor!")
         await target.add_roles(lg.get_role(DEAD))
         await ctx.send(f"<@{spell['target']}> was murdered by the Killing Curse!")
         SPELLS_TO_RESOLVE.remove(spell)
-        await asyncio.sleep(60)
+        await asyncio.sleep(3600)
         for role in temp_roles:
             await target.add_roles(role)
         return await target.remove_roles(lg.get_role(DEAD))
