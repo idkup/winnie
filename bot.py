@@ -172,7 +172,7 @@ async def cast(ctx, spell):
             return
         target = lg.get_member(spell["target"])
         await target.add_roles(lg.get_role(STUPEFIED))
-        await ctx.send(f"<@{spell["origin"]}> cast STUPEFY on <@{spell["target"]}>!")
+        await ctx.send(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
         await asyncio.sleep(60)
         return await target.remove_roles(lg.get_role(STUPEFIED))
     if spell.lower == "protego":
