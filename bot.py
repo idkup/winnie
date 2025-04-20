@@ -40,6 +40,7 @@ ACCESS_RAVENCLAW = 1359768549815484438
 ACCESS_HUFFLEPUFF = 1359768594573168662
 
 STUPEFIED = 1363375744511774760
+DEAD = 1363393794325741600
 
 SPELLS_TO_RESOLVE = []
 
@@ -171,7 +172,7 @@ async def cast(ctx, *args):
     if "stupefy" in sp.lower():
         if not ctx.message.mentions:
             return
-        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": sp.lower()}
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "stupefy"}
         SPELLS_TO_RESOLVE.append(spell)
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
@@ -187,12 +188,38 @@ async def cast(ctx, *args):
             if s["target"] == ctx.author.id:
                 origin = s["origin"]
                 spelltype = s["type"]
+                if spelltype == "avada kedavra":
+                    return await ctx.send("Failed to protect against the Killing Curse!")
                 SPELLS_TO_RESOLVE.remove(s)
                 return await ctx.send(f"<@{ctx.author.id}> cast PROTEGO and blocked <@{origin}>'s {spelltype.upper()}!")
+        return await ctx.send("Nothing to protect against!")
     elif "avada kedavra" in sp.lower():
+        for channel in lg.channels:
+            await channel.set_permissions(lg.get_role(DEAD), view_channel=False, send_messages=False, speak=False)
         if not ctx.message.mentions:
             return
         await ctx.send("Someone has cast the Killing Curse!")
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "avada kedavra"}
+        await asyncio.sleep(5)
+        if spell not in SPELLS_TO_RESOLVE:
+            return
+        target = lg.get_member(spell["target"])
+        await target.add_roles(lg.get_role(DEAD))
+        await ctx.send(f"<@{spell['target']}> was murdered by the Killing Curse!")
+        await asyncio.sleep(3600)
+        return await target.remove_roles(lg.get_role(DEAD))
+    elif "avis" in sp.lower():
+        for s in SPELLS_TO_RESOLVE:
+            if s["target"] == ctx.author.id:
+                origin = s["origin"]
+                spelltype = s["type"]
+                if spelltype == "avada kedavra":
+                    if random.randint(0,2) == 0:
+                        await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Killing Curse!")
+                        SPELLS_TO_RESOLVE.remove(s)
+                    return await ctx.send("Dodge failed!")
+
+
 
 
 @bot.command(aliases=['dt', 'poke', 'pokemon'])
