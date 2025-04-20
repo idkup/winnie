@@ -224,7 +224,8 @@ async def cast(ctx, *args):
         SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(3600)
         for role in temp_roles:
-            await target.add_roles(role)
+            if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
+                await target.add_roles(role)
         return await target.remove_roles(lg.get_role(DEAD))
     elif "avis" in sp.lower():
         for s in SPELLS_TO_RESOLVE:
@@ -233,8 +234,9 @@ async def cast(ctx, *args):
                 spelltype = s["type"]
                 if spelltype == "avada kedavra":
                     if random.randint(0,2) == 0:
+                        SPELLS_TO_RESOLVE.remove(s)
                         await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Killing Curse!")
-                        return SPELLS_TO_RESOLVE.remove(s)
+                        return
                     return await ctx.send("Dodge failed!")
 
 
