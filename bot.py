@@ -168,7 +168,7 @@ async def cast(ctx, *args):
 
     sp = " ".join(args)
 
-    if sp.lower() == "stupefy":
+    if "stupefy" in sp.lower():
         if not ctx.message.mentions:
             return
         spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": sp.lower()}
@@ -182,14 +182,14 @@ async def cast(ctx, *args):
         SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(60)
         return await target.remove_roles(lg.get_role(STUPEFIED))
-    elif sp.lower() == "protego":
+    elif "protego" in sp.lower():
         for s in SPELLS_TO_RESOLVE:
             if s["target"] == ctx.author.id:
                 origin = s["origin"]
                 spelltype = s["type"]
                 SPELLS_TO_RESOLVE.remove(s)
                 return await ctx.send(f"<@{ctx.author.id}> cast PROTEGO and blocked <@{origin}>'s {spelltype.upper()}!")
-    elif sp.lower() == "avada kedavra":
+    elif "avada kedavra" in sp.lower():
         if not ctx.message.mentions:
             return
         await ctx.send("Someone has cast the Killing Curse!")
