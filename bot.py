@@ -169,7 +169,7 @@ async def cast(ctx, sp, *args):
     if sp.lower() == "stupefy":
         if not ctx.message.mentions:
             return
-        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": spell.lower}
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": sp.lower()}
         SPELLS_TO_RESOLVE.append(spell)
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
