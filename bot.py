@@ -206,6 +206,7 @@ async def cast(ctx, *args):
         target = lg.get_member(spell["target"])
         await target.add_roles(lg.get_role(DEAD))
         await ctx.send(f"<@{spell['target']}> was murdered by the Killing Curse!")
+        SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(3600)
         return await target.remove_roles(lg.get_role(DEAD))
     elif "avis" in sp.lower():
