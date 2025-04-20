@@ -158,15 +158,16 @@ async def calc(ctx):
 
 
 @bot.command()
-async def cast(ctx, spell, *args):
+async def cast(ctx, sp, *args):
     if isinstance(ctx.channel, discord.DMChannel):
         return
 
     lg = bot.get_guild(LISS_GUILD)
 
     global SPELLS_TO_RESOLVE
+    print(sp)
 
-    if spell.lower == "stupefy":
+    if sp.lower == "stupefy":
         if not ctx.message.mentions:
             return
         spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": spell.lower}
@@ -179,7 +180,7 @@ async def cast(ctx, spell, *args):
         await ctx.send(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
         await asyncio.sleep(60)
         return await target.remove_roles(lg.get_role(STUPEFIED))
-    if spell.lower == "protego":
+    if sp.lower == "protego":
         for s in SPELLS_TO_RESOLVE:
             if s["target"] == ctx.author.id:
                 origin = s["origin"]
