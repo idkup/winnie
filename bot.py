@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 import datetime
@@ -37,6 +38,10 @@ ACCESS_SLYTHERIN = 1359768475521912944
 ACCESS_GRYFFINDOR = 1359768519046074400
 ACCESS_RAVENCLAW = 1359768549815484438
 ACCESS_HUFFLEPUFF = 1359768594573168662
+
+STUPEFIED = 1363375744511774760
+
+SPELLS_TO_RESOLVE = []
 
 STAR_THRESHOLD = 5
 
@@ -150,6 +155,34 @@ async def add_user(ctx):
 @bot.command()
 async def calc(ctx):
     await ctx.send("Pokemon Damage Calculator: https://pokemonshowdown.com/damagecalc/")
+
+
+@bot.command()
+async def cast(ctx, spell):
+    lg = bot.get_guild(LISS_GUILD)
+
+    global SPELLS_TO_RESOLVE
+    if spell.lower == "stupefy":
+        if not ctx.message.mentions:
+            return
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": spell.lower}
+        SPELLS_TO_RESOLVE.append(spell)
+        await asyncio.sleep(5)
+        if spell not in SPELLS_TO_RESOLVE:
+            return
+        target = lg.get_member(spell["target"])
+        await target.add_roles(lg.get_role(STUPEFIED))
+        await ctx.send(f"<@{spell["origin"]}> cast STUPEFY on <@{spell["target"]}>!")
+        await asyncio.sleep(60)
+        return await target.remove_roles(lg.get_role(STUPEFIED))
+    if spell.lower == "protego":
+        for s in SPELLS_TO_RESOLVE:
+            if s["target"] == ctx.author.id:
+                origin = s["origin"]
+                spelltype = s["type"]
+                SPELLS_TO_RESOLVE.remove(s)
+                return await ctx.send(f"<@{ctx.author.id}> cast PROTEGO and blocked <@{origin}>'s {spelltype.upper()}!")
+
 
 
 @bot.command(aliases=['dt', 'poke', 'pokemon'])
