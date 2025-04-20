@@ -165,7 +165,7 @@ async def cast(ctx, sp, *args):
     lg = bot.get_guild(LISS_GUILD)
 
     global SPELLS_TO_RESOLVE
-    print(sp)
+    await ctx.send(sp)
 
     if sp.lower == "stupefy":
         if not ctx.message.mentions:
