@@ -194,12 +194,11 @@ async def cast(ctx, *args):
                 return await ctx.send(f"<@{ctx.author.id}> cast PROTEGO and blocked <@{origin}>'s {spelltype.upper()}!")
         return await ctx.send("Nothing to protect against!")
     elif "avada kedavra" in sp.lower():
-        for channel in lg.channels:
-            await channel.set_permissions(lg.get_role(DEAD), view_channel=False, send_messages=False, speak=False)
         if not ctx.message.mentions:
             return
         await ctx.send("Someone has cast the Killing Curse!")
         spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "avada kedavra"}
+        SPELLS_TO_RESOLVE.append(spell)
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
