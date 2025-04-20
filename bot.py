@@ -42,6 +42,8 @@ ACCESS_HUFFLEPUFF = 1359768594573168662
 STUPEFIED = 1363375744511774760
 DEAD = 1363393794325741600
 
+SPELL_INDEX = 0
+
 SPELLS_TO_RESOLVE = []
 
 STAR_THRESHOLD = 5
@@ -174,6 +176,7 @@ async def cast(ctx, *args):
 
     lg = bot.get_guild(LISS_GUILD)
 
+    global SPELL_INDEX
     global SPELLS_TO_RESOLVE
 
     sp = " ".join(args)
@@ -181,8 +184,9 @@ async def cast(ctx, *args):
     if "stupefy" in sp.lower():
         if not ctx.message.mentions:
             return
-        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "stupefy"}
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "stupefy", "index": SPELL_INDEX}
         SPELLS_TO_RESOLVE.append(spell)
+        SPELL_INDEX += 1
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
@@ -206,8 +210,9 @@ async def cast(ctx, *args):
         if not ctx.message.mentions:
             return
         await ctx.send("Someone has cast the Killing Curse!")
-        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "avada kedavra"}
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "avada kedavra", "index": SPELL_INDEX}
         SPELLS_TO_RESOLVE.append(spell)
+        SPELL_INDEX += 1
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
@@ -239,6 +244,7 @@ async def cast(ctx, *args):
                         await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Killing Curse!")
                         return
                     return await ctx.send("Dodge failed!")
+        return await ctx.send("Nothing to dodge!")
 
 
 
