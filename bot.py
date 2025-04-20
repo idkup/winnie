@@ -160,6 +160,15 @@ async def calc(ctx):
 
 @bot.command()
 async def cast(ctx, *args):
+    """
+    Cast spells at people that annoy you.
+    ATTACKS:
+        STUPEFY: 1 min mute
+        AVADA KEDAVRA: 60 min death
+    DEFENSIVES:
+        PROTEGO: blocks STUPEFY, guaranteed
+        AVIS: blocks AVADA KEDAVRA, 33% success rate
+    """
     if isinstance(ctx.channel, discord.DMChannel):
         return
 
@@ -203,10 +212,17 @@ async def cast(ctx, *args):
         if spell not in SPELLS_TO_RESOLVE:
             return
         target = lg.get_member(spell["target"])
+        temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
+        try:
+            await target.remove_roles(*temp_roles)
+        except discord.Forbidden:
+            return await ctx.send("The Killing Curse was blocked by plot armor!")
         await target.add_roles(lg.get_role(DEAD))
         await ctx.send(f"<@{spell['target']}> was murdered by the Killing Curse!")
         SPELLS_TO_RESOLVE.remove(spell)
-        await asyncio.sleep(3600)
+        await asyncio.sleep(60)
+        for role in temp_roles:
+            await target.add_roles(role)
         return await target.remove_roles(lg.get_role(DEAD))
     elif "avis" in sp.lower():
         for s in SPELLS_TO_RESOLVE:
