@@ -158,16 +158,15 @@ async def calc(ctx):
 
 
 @bot.command()
-async def cast(ctx, sp, *args):
+async def cast(ctx, *args):
     if isinstance(ctx.channel, discord.DMChannel):
         return
 
     lg = bot.get_guild(LISS_GUILD)
 
-    for channel in lg.channels:
-        await channel.set_permissions(lg.get_role(STUPEFIED), send_messages = False, speak = False)
-
     global SPELLS_TO_RESOLVE
+
+    sp = " ".join(args)
 
     if sp.lower() == "stupefy":
         if not ctx.message.mentions:
@@ -180,16 +179,20 @@ async def cast(ctx, sp, *args):
         target = lg.get_member(spell["target"])
         await target.add_roles(lg.get_role(STUPEFIED))
         await ctx.send(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
+        SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(60)
         return await target.remove_roles(lg.get_role(STUPEFIED))
-    if sp.lower() == "protego":
+    elif sp.lower() == "protego":
         for s in SPELLS_TO_RESOLVE:
             if s["target"] == ctx.author.id:
                 origin = s["origin"]
                 spelltype = s["type"]
                 SPELLS_TO_RESOLVE.remove(s)
                 return await ctx.send(f"<@{ctx.author.id}> cast PROTEGO and blocked <@{origin}>'s {spelltype.upper()}!")
-
+    elif sp.lower() == "avada kedavra":
+        if not ctx.message.mentions:
+            return
+        await ctx.send("Someone has cast the Killing Curse!")
 
 
 @bot.command(aliases=['dt', 'poke', 'pokemon'])
