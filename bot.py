@@ -170,11 +170,16 @@ async def cast(ctx, *args):
     DEFENSIVES:
         PROTEGO: blocks STUPEFY, guaranteed
         AVIS: blocks AVADA KEDAVRA, 33% success rate
+    UTILITY:
+        RENNERVATE: reverts STUPEFY on a target
     """
     if isinstance(ctx.channel, discord.DMChannel):
         return
 
     lg = bot.get_guild(LISS_GUILD)
+
+    if ctx.guild != lg:
+        return
 
     global SPELL_INDEX
     global SPELLS_TO_RESOLVE
@@ -194,7 +199,7 @@ async def cast(ctx, *args):
         await target.add_roles(lg.get_role(STUPEFIED))
         await ctx.send(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
         SPELLS_TO_RESOLVE.remove(spell)
-        await asyncio.sleep(60)
+        await asyncio.sleep(300)
         return await target.remove_roles(lg.get_role(STUPEFIED))
     elif "protego" in sp.lower():
         for s in SPELLS_TO_RESOLVE:
@@ -245,6 +250,17 @@ async def cast(ctx, *args):
                         return
                     return await ctx.send("Dodge failed!")
         return await ctx.send("Nothing to dodge!")
+    elif "rennervate" in sp.lower():
+        if not ctx.message.mentions:
+            return
+        target = ctx.message.mentions[0]
+        if lg.get_role(STUPEFIED) in target.roles:
+            target.remove_roles(lg.get_role(STUPEFIED))
+            return await ctx.send(f"<@{ctx.author.id}> cast RENNERVATE and freed <@{target.id}> from STUPEFY!")
+        else:
+            return await ctx.send(f"<@{target.id}> is not stupefied!")
+
+
 
 
 
