@@ -234,7 +234,7 @@ async def cast(ctx, *args):
                 if spelltype == "avada kedavra":
                     if random.randint(0,2) == 0:
                         await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Killing Curse!")
-                        SPELLS_TO_RESOLVE.remove(s)
+                        return SPELLS_TO_RESOLVE.remove(s)
                     return await ctx.send("Dodge failed!")
 
 
