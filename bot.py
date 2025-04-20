@@ -158,10 +158,14 @@ async def calc(ctx):
 
 
 @bot.command()
-async def cast(ctx, spell):
+async def cast(ctx, spell, *args):
+    if isinstance(ctx.channel, discord.DMChannel):
+        return
+
     lg = bot.get_guild(LISS_GUILD)
 
     global SPELLS_TO_RESOLVE
+
     if spell.lower == "stupefy":
         if not ctx.message.mentions:
             return
