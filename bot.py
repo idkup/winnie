@@ -207,7 +207,7 @@ async def cast(ctx, *args):
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
-        spell_embed.set_title(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
+        spell_embed.title = f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!"
         if spell["origin"] == spell["target"]:
             spell_embed.set_image(url=random.choice(SPELL_GIFS["stupefy_self"]))
         else:
@@ -247,7 +247,7 @@ async def cast(ctx, *args):
                 await target.add_roles(role)
             SPELLS_TO_RESOLVE.remove(spell)
             return await ctx.send("The Killing Curse was blocked by plot armor!")
-        spell_embed.set_title(f"<@{spell['target']}> was murdered by the Killing Curse!")
+        spell_embed.title = f"<@{spell['target']}> was murdered by the Killing Curse!"
         if spell["origin"] == spell["target"]:
             spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra_self"]))
         else:
