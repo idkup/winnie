@@ -46,6 +46,11 @@ SPELL_INDEX = 0
 
 SPELLS_TO_RESOLVE = []
 
+SPELL_GIFS = {"stupefy_self": ["https://media1.tenor.com/m/paZdTSG9xkQAAAAd/4palmtree-stupefy.gif"],
+              "stupefy": ["https://media1.tenor.com/m/weQ6qix2zd0AAAAd/4palmtree-spell.gif"],
+              "avadakedavra_self": ["https://media1.tenor.com/m/YVF2v-0sbgcAAAAd/avada-kedavra-harry-potter.gif", "https://media1.tenor.com/m/UqhC6KbKtlQAAAAd/4palmtree-harry-potter.gif"],
+              "avadakedavra": ["https://media1.tenor.com/m/DqMw_C5e58kAAAAd/4palmtree-harry-potter.gif", "https://media1.tenor.com/m/-KPnV0PZu1kAAAAd/4palmtree-harry-potter.gif"]}
+
 STAR_THRESHOLD = 5
 
 intents = discord.Intents.default()
@@ -165,7 +170,7 @@ async def cast(ctx, *args):
     """
     Cast spells at people that annoy you.
     ATTACKS:
-        STUPEFY: 1 min mute
+        STUPEFY: 5 min mute
         AVADA KEDAVRA: 60 min death
     DEFENSIVES:
         PROTEGO: blocks STUPEFY, guaranteed
@@ -181,8 +186,15 @@ async def cast(ctx, *args):
     if ctx.guild != lg:
         return
 
+    if lg.get_role(DEAD) in ctx.author.roles:
+        return
+    if lg.get_role(STUPEFIED) in ctx.author.roles:
+        return
+
     global SPELL_INDEX
     global SPELLS_TO_RESOLVE
+
+    spell_embed = discord.Embed()
 
     sp = " ".join(args)
 
@@ -195,9 +207,14 @@ async def cast(ctx, *args):
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
+        spell_embed.set_title(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
+        if spell["origin"] == spell["target"]:
+            spell_embed.set_image(url=random.choice(SPELL_GIFS["stupefy_self"]))
+        else:
+            spell_embed.set_image(url=random.choice(SPELL_GIFS["stupefy"]))
         target = lg.get_member(spell["target"])
         await target.add_roles(lg.get_role(STUPEFIED))
-        await ctx.send(f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!")
+        await ctx.send(embed=spell_embed)
         SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(300)
         return await target.remove_roles(lg.get_role(STUPEFIED))
@@ -230,8 +247,13 @@ async def cast(ctx, *args):
                 await target.add_roles(role)
             SPELLS_TO_RESOLVE.remove(spell)
             return await ctx.send("The Killing Curse was blocked by plot armor!")
+        spell_embed.set_title(f"<@{spell['target']}> was murdered by the Killing Curse!")
+        if spell["origin"] == spell["target"]:
+            spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra_self"]))
+        else:
+            spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra"]))
         await target.add_roles(lg.get_role(DEAD))
-        await ctx.send(f"<@{spell['target']}> was murdered by the Killing Curse!")
+        await ctx.send(embed=spell_embed)
         SPELLS_TO_RESOLVE.remove(spell)
         await asyncio.sleep(3600)
         for role in temp_roles:
