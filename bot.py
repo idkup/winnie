@@ -234,7 +234,7 @@ async def cast(ctx, *args):
                 spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra"]))
             await target.add_roles(lg.get_role(DEAD))
             await ctx.send(embed=spell_embed)
-            SPELLS_TO_RESOLVE.remove(spell)
+            SPELLS_TO_RESOLVE.remove(secondaryspell)
             await asyncio.sleep(3600)
             for role in temp_roles:
                 if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
