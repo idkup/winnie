@@ -211,7 +211,6 @@ async def cast(ctx, *args):
         SPELLS_TO_RESOLVE.remove(spell)
         sp = " ".join(args[1:])
         if "avada kedavra" in sp.lower():
-            await asyncio.sleep(10)
             await ctx.send(f"<@{ctx.message.mentions[0].id}> has cast the Killing Curse at <@{ctx.message.mentions[1].id}>!?")
             secondaryspell = {"origin": ctx.message.mentions[0].id, "target": ctx.message.mentions[1].id, "type": "avada kedavra", "index": SPELL_INDEX}
             SPELLS_TO_RESOLVE.append(secondaryspell)
