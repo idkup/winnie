@@ -46,10 +46,10 @@ SPELL_INDEX = 0
 
 SPELLS_TO_RESOLVE = []
 
-SPELL_GIFS = {"stupefy_self": ["https://media1.tenor.com/m/paZdTSG9xkQAAAAd/4palmtree-stupefy.gif"],
-              "stupefy": ["https://media1.tenor.com/m/weQ6qix2zd0AAAAd/4palmtree-spell.gif"],
-              "avadakedavra_self": ["https://media1.tenor.com/m/YVF2v-0sbgcAAAAd/avada-kedavra-harry-potter.gif", "https://media1.tenor.com/m/UqhC6KbKtlQAAAAd/4palmtree-harry-potter.gif"],
-              "avadakedavra": ["https://media1.tenor.com/m/DqMw_C5e58kAAAAd/4palmtree-harry-potter.gif", "https://media1.tenor.com/m/-KPnV0PZu1kAAAAd/4palmtree-harry-potter.gif"]}
+SPELL_GIFS = {"stupefy_self": ["https://c.tenor.com/paZdTSG9xkQAAAAd/tenor.gif"],
+              "stupefy": ["https://c.tenor.com/weQ6qix2zd0AAAAd/tenor.gif"],
+              "avadakedavra_self": ["https://c.tenor.com/YVF2v-0sbgcAAAAd/tenor.gif", "https://c.tenor.com/UqhC6KbKtlQAAAAd/tenor.gif"],
+              "avadakedavra": ["https://c.tenor.com/DqMw_C5e58kAAAAd/tenor.gif", "https://c.tenor.com/-KPnV0PZu1kAAAAd/tenor.gif"]}
 
 STAR_THRESHOLD = 5
 
@@ -194,7 +194,7 @@ async def cast(ctx, *args):
     global SPELL_INDEX
     global SPELLS_TO_RESOLVE
 
-    spell_embed = discord.Embed()
+    spell_embed = discord.Embed(title="Spell cast!")
 
     sp = " ".join(args)
 
@@ -207,7 +207,7 @@ async def cast(ctx, *args):
         await asyncio.sleep(5)
         if spell not in SPELLS_TO_RESOLVE:
             return
-        spell_embed.title = f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!"
+        spell_embed.description = f"<@{ctx.author.id}> cast STUPEFY on <@{spell['target']}>!"
         if spell["origin"] == spell["target"]:
             spell_embed.set_image(url=random.choice(SPELL_GIFS["stupefy_self"]))
         else:
@@ -247,7 +247,7 @@ async def cast(ctx, *args):
                 await target.add_roles(role)
             SPELLS_TO_RESOLVE.remove(spell)
             return await ctx.send("The Killing Curse was blocked by plot armor!")
-        spell_embed.title = f"<@{spell['target']}> was murdered by the Killing Curse!"
+        spell_embed.description = f"<@{spell['target']}> was murdered by the Killing Curse!"
         if spell["origin"] == spell["target"]:
             spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra_self"]))
         else:
