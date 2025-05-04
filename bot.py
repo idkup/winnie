@@ -172,9 +172,10 @@ async def cast(ctx, *args):
     ATTACKS:
         STUPEFY: 5 min mute
         AVADA KEDAVRA: 60 min death
+        IMPERIO: can be used to force a third party to cast a spell on your behalf
     DEFENSIVES:
         PROTEGO: blocks STUPEFY, guaranteed
-        AVIS: blocks AVADA KEDAVRA, 33% success rate
+        AVIS: blocks AVADA KEDAVRA, 33% success rate; blocks IMPERIO, 50% success rate
     UTILITY:
         RENNERVATE: reverts STUPEFY on a target
     """
@@ -198,7 +199,50 @@ async def cast(ctx, *args):
 
     sp = " ".join(args)
 
-    if "stupefy" in sp.lower():
+    if "imperio" == args[0].lower():
+        if len(ctx.message.mentions) != 2:
+            return
+        spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "imperio", "index": SPELL_INDEX}
+        SPELLS_TO_RESOLVE.append(spell)
+        SPELL_INDEX += 1
+        await asyncio.sleep(10)
+        if spell not in SPELLS_TO_RESOLVE:
+            return
+        SPELLS_TO_RESOLVE.remove(spell)
+        sp = " ".join(args[1:])
+        if "avada kedavra" in sp.lower():
+            await asyncio.sleep(10)
+            await ctx.send("Someone has cast the Killing Curse!")
+            secondaryspell = {"origin": ctx.message.mentions[0].id, "target": ctx.message.mentions[1].id, "type": "avada kedavra", "index": SPELL_INDEX}
+            SPELLS_TO_RESOLVE.append(secondaryspell)
+            SPELL_INDEX += 1
+            await asyncio.sleep(15)
+            if secondaryspell not in SPELLS_TO_RESOLVE:
+                return
+            target = lg.get_member(secondaryspell["target"])
+            temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
+            try:
+                await target.remove_roles(*temp_roles)
+            except discord.Forbidden:
+                for role in temp_roles:
+                    await target.add_roles(role)
+                SPELLS_TO_RESOLVE.remove(secondaryspell)
+                return await ctx.send("The Killing Curse was blocked by plot armor!")
+            spell_embed.description = f"<@{secondaryspell['target']}> was murdered by the Killing Curse!"
+            if secondaryspell["origin"] == secondaryspell["target"]:
+                spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra_self"]))
+            else:
+                spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra"]))
+            await target.add_roles(lg.get_role(DEAD))
+            await ctx.send(embed=spell_embed)
+            SPELLS_TO_RESOLVE.remove(spell)
+            await asyncio.sleep(3600)
+            for role in temp_roles:
+                if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
+                    await target.add_roles(role)
+            return await target.remove_roles(lg.get_role(DEAD))
+
+    elif "stupefy" in sp.lower():
         if not ctx.message.mentions:
             return
         spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "stupefy", "index": SPELL_INDEX}
@@ -235,7 +279,7 @@ async def cast(ctx, *args):
         spell = {"origin": ctx.author.id, "target": ctx.message.mentions[0].id, "type": "avada kedavra", "index": SPELL_INDEX}
         SPELLS_TO_RESOLVE.append(spell)
         SPELL_INDEX += 1
-        await asyncio.sleep(5)
+        await asyncio.sleep(15)
         if spell not in SPELLS_TO_RESOLVE:
             return
         target = lg.get_member(spell["target"])
@@ -269,6 +313,12 @@ async def cast(ctx, *args):
                     if random.randint(0,2) == 0:
                         SPELLS_TO_RESOLVE.remove(s)
                         await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Killing Curse!")
+                        return
+                    return await ctx.send("Dodge failed!")
+                elif spelltype == "imperio":
+                    if random.randint(0,1) == 0:
+                        SPELLS_TO_RESOLVE.remove(s)
+                        await ctx.send(f"<@{ctx.author.id}> dodged <@{origin}>'s Imperius Curse!")
                         return
                     return await ctx.send("Dodge failed!")
         return await ctx.send("Nothing to dodge!")
