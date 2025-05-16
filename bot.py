@@ -218,6 +218,7 @@ async def cast(ctx, *args):
             await asyncio.sleep(15)
             if secondaryspell not in SPELLS_TO_RESOLVE:
                 return
+            SPELLS_TO_RESOLVE.remove(secondaryspell)
             target = lg.get_member(secondaryspell["target"])
             temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
             try:
@@ -233,8 +234,10 @@ async def cast(ctx, *args):
             else:
                 spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra"]))
             await target.add_roles(lg.get_role(DEAD))
-            await ctx.send(embed=spell_embed)
-            SPELLS_TO_RESOLVE.remove(secondaryspell)
+            try:
+                await ctx.send(embed=spell_embed)
+            except:
+                pass
             await asyncio.sleep(3600)
             for role in temp_roles:
                 if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
@@ -281,6 +284,7 @@ async def cast(ctx, *args):
         await asyncio.sleep(15)
         if spell not in SPELLS_TO_RESOLVE:
             return
+        SPELLS_TO_RESOLVE.remove(spell)
         target = lg.get_member(spell["target"])
         temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
         try:
@@ -296,8 +300,10 @@ async def cast(ctx, *args):
         else:
             spell_embed.set_image(url=random.choice(SPELL_GIFS["avadakedavra"]))
         await target.add_roles(lg.get_role(DEAD))
-        await ctx.send(embed=spell_embed)
-        SPELLS_TO_RESOLVE.remove(spell)
+        try:
+            await ctx.send(embed=spell_embed)
+        except:
+            pass
         await asyncio.sleep(3600)
         for role in temp_roles:
             if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
