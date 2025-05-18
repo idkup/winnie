@@ -240,7 +240,7 @@ async def cast(ctx, *args):
                 pass
             await asyncio.sleep(3600)
             for role in temp_roles:
-                if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
+                if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF, STUPEFIED]:
                     await target.add_roles(role)
             return await target.remove_roles(lg.get_role(DEAD))
 
