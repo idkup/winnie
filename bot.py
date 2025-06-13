@@ -201,7 +201,7 @@ async def cast(ctx, *args):
 
     sp = " ".join(args)
 
-    UNREMOVEABLE_ROLES = [ROLE_BOOSTER, ctx.guild.default_role]
+    UNREMOVEABLE_ROLES = [ROLE_BOOSTER, ctx.guild.default_role.id]
 
     if "imperio" == args[0].lower():
         if len(ctx.message.mentions) != 2:
