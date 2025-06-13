@@ -34,6 +34,8 @@ ROLE_GRYFFINDOR = 1357741193919729894
 ROLE_RAVENCLAW = 1357745890009419796
 ROLE_HUFFLEPUFF = 1357746016786579476
 
+ROLE_BOOSTER = 1373521073068572782
+
 ACCESS_SLYTHERIN = 1359768475521912944
 ACCESS_GRYFFINDOR = 1359768519046074400
 ACCESS_RAVENCLAW = 1359768549815484438
@@ -199,6 +201,8 @@ async def cast(ctx, *args):
 
     sp = " ".join(args)
 
+    UNREMOVEABLE_ROLES = [ROLE_BOOSTER, ctx.guild.default_role]
+
     if "imperio" == args[0].lower():
         if len(ctx.message.mentions) != 2:
             return
@@ -220,7 +224,7 @@ async def cast(ctx, *args):
                 return
             SPELLS_TO_RESOLVE.remove(secondaryspell)
             target = lg.get_member(secondaryspell["target"])
-            temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
+            temp_roles = [role for role in target.roles if role not in UNREMOVEABLE_ROLES]
             try:
                 await target.remove_roles(*temp_roles)
             except discord.Forbidden:
@@ -286,7 +290,7 @@ async def cast(ctx, *args):
             return
         SPELLS_TO_RESOLVE.remove(spell)
         target = lg.get_member(spell["target"])
-        temp_roles = [role for role in target.roles if role != ctx.guild.default_role]
+        temp_roles = [role for role in target.roles if role not in UNREMOVEABLE_ROLES]
         try:
             await target.remove_roles(*temp_roles)
         except discord.Forbidden:
@@ -306,7 +310,7 @@ async def cast(ctx, *args):
             pass
         await asyncio.sleep(3600)
         for role in temp_roles:
-            if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF]:
+            if role.id not in [ACCESS_SLYTHERIN, ACCESS_GRYFFINDOR, ACCESS_RAVENCLAW, ACCESS_HUFFLEPUFF, STUPEFIED]:
                 await target.add_roles(role)
         return await target.remove_roles(lg.get_role(DEAD))
     elif "avis" in sp.lower():
