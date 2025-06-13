@@ -224,7 +224,7 @@ async def cast(ctx, *args):
                 return
             SPELLS_TO_RESOLVE.remove(secondaryspell)
             target = lg.get_member(secondaryspell["target"])
-            temp_roles = [role for role in target.roles if role not in UNREMOVEABLE_ROLES]
+            temp_roles = [role for role in target.roles if role.id not in UNREMOVEABLE_ROLES]
             try:
                 await target.remove_roles(*temp_roles)
             except discord.Forbidden:
@@ -290,7 +290,7 @@ async def cast(ctx, *args):
             return
         SPELLS_TO_RESOLVE.remove(spell)
         target = lg.get_member(spell["target"])
-        temp_roles = [role for role in target.roles if role not in UNREMOVEABLE_ROLES]
+        temp_roles = [role for role in target.roles if role.id not in UNREMOVEABLE_ROLES]
         try:
             await target.remove_roles(*temp_roles)
         except discord.Forbidden:
