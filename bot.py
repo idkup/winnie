@@ -702,7 +702,7 @@ async def on_message(message):
                     start, end = match.span()
                     before = txt[max(0, start - 3):start]
                     after = txt[end:end + 1]
-                    if (before in ("<@&", "<@", "<#")) and after == ">":
+                    if "<" in before and after == ">":
                         continue
                     to_add = int(match.group())
                     break
