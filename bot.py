@@ -834,7 +834,7 @@ async def on_raw_reaction_add(payload):
         return
     if str(payload.emoji) != "❌":
         return
-    if payload.user_id != message.author.id:
+    if payload.user_id != message.author.id and payload.user_id != 590336288935378950:
         return
     if "!g" not in message.content:
         return
