@@ -1,4 +1,5 @@
 import asyncio
+from collections import defaultdict
 import discord
 from discord.ext import commands
 import datetime
@@ -52,6 +53,13 @@ SPELL_GIFS = {"stupefy_self": ["https://c.tenor.com/paZdTSG9xkQAAAAd/tenor.gif"]
               "stupefy": ["https://c.tenor.com/weQ6qix2zd0AAAAd/tenor.gif"],
               "avadakedavra_self": ["https://c.tenor.com/YVF2v-0sbgcAAAAd/tenor.gif", "https://c.tenor.com/UqhC6KbKtlQAAAAd/tenor.gif"],
               "avadakedavra": ["https://c.tenor.com/DqMw_C5e58kAAAAd/tenor.gif", "https://c.tenor.com/-KPnV0PZu1kAAAAd/tenor.gif"]}
+
+WORDLE_POINTS = {'1': 18,
+                 '2': 15,
+                 '3': 12,
+                 '4': 9,
+                 '5': 6,
+                 '6': 3}
 
 STAR_THRESHOLD = 5
 
@@ -652,9 +660,43 @@ async def on_message(message):
             await message.delete()
         if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
             return await bot.process_commands(message)
+        # wordle shit
+        if "yesterday's results" in txt and message.author == bot.get_user(1211781489931452447) and message.channel.id == 1359314277680550051:
+            lines = message.content.split('\n')
+            results = defaultdict(list)
+            for line in lines:
+                match = re.match(r"(?:👑\s*)?([0-6])/6:\s*(.*)", line)
+                if match:
+                    attempt = match.group(1)
+                    uids = re.findall(r"<@(\d+)>", match.group(2))
+                    results[attempt].extend(uids)
+            lg = bot.get_guild(LISS_GUILD)
+            for k, v in results.items():
+                pts = WORDLE_POINTS[k]
+                for user in v:
+                    member = await lg.fetch_member(int(user))
+                    roles = member.roles
+                    if lg.get_role(ROLE_SLYTHERIN) in roles:
+                        house = "Slytherin"
+                        points_db[str(ROLE_SLYTHERIN)] += pts
+                    elif lg.get_role(ROLE_GRYFFINDOR) in roles:
+                        house = "Gryffindor"
+                        points_db[str(ROLE_GRYFFINDOR)] += pts
+                    elif lg.get_role(ROLE_RAVENCLAW) in roles:
+                        house = "Ravenclaw"
+                        points_db[str(ROLE_RAVENCLAW)] += pts
+                    elif lg.get_role(ROLE_HUFFLEPUFF) in roles:
+                        house = "Hufflepuff"
+                        points_db[str(ROLE_HUFFLEPUFF)] += pts
+                    else:
+                        continue
+                    print(f"<@{user}> has earned {house} {pts} points for their prowess at Wordle!")
+            with open('data/points.json', 'w+') as f:
+                json.dump(points_db, f)
+
         if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
             if message.author.guild_permissions.manage_messages:
-                number_pattern = r"[-+]?\d+"
+                number_pattern = r"(?<!<[@#])[-+]?\d+(?!>)"
                 matches = list(re.finditer(number_pattern, txt))
                 for match in matches:
                     start = match.start()
