@@ -696,14 +696,9 @@ async def on_message(message):
 
         if "pts" in txt or "points" in txt and message.guild.id == LISS_GUILD:
             if message.author.guild_permissions.manage_messages:
-                number_pattern = r"(?<!<[@#])[-+]?\d+(?!>)"
-                matches = list(re.finditer(number_pattern, txt))
-                for match in matches:
-                    start = match.start()
-                    if start > 0 and txt[start - 1] == '@':
-                        continue
-                    to_add = int(match[0])
-                    break
+                cleaned = re.sub(r"<[@#&]?\d+>", "", txt)
+                matches = re.findall(r"[-+]?\b\d+\b", cleaned)
+                to_add = matches[0]
                 culprit = "Someone"
                 if message.mentions:
                     culprit = f"<@{message.mentions[0].id}>"
