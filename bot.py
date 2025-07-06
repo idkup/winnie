@@ -698,7 +698,7 @@ async def on_message(message):
             if message.author.guild_permissions.manage_messages:
                 cleaned = re.sub(r"<[@#&]?\d+>", "", txt)
                 matches = re.findall(r"[-+]?\b\d+\b", cleaned)
-                to_add = matches[0]
+                to_add = int(matches[0])
                 culprit = "Someone"
                 if message.mentions:
                     culprit = f"<@{message.mentions[0].id}>"
