@@ -690,7 +690,7 @@ async def on_message(message):
                         points_db[str(ROLE_HUFFLEPUFF)] += pts
                     else:
                         continue
-                    print(f"<@{user}> has earned {house} {pts} points for their prowess at Wordle!")
+                    await bot.get_channel(POINT_LOG_CHANNEL).send(f"<@{user}> has earned {house} {pts} points for their prowess at Wordle!")
             with open('data/points.json', 'w+') as f:
                 json.dump(points_db, f)
 
