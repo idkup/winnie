@@ -661,7 +661,7 @@ async def on_message(message):
         if (datetime.datetime.now() - spam_horizon).total_seconds() <= 30 or bot.user == message.author:
             return await bot.process_commands(message)
         # wordle shit
-        if "yesterday's results" in txt and message.author == bot.get_user(1211781489931452447) and message.channel.id == 1359314277680550051:
+        if "yesterday's results" in txt and message.author.id == 1211781489931452447 and message.channel.id == 1359314277680550051:
             lines = message.content.split('\n')
             results = defaultdict(list)
             for line in lines:
